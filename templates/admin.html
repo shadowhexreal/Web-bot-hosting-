@@ -1,0 +1,1274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#06080f">
+<title>Admin | SHADOW HOSTING</title>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+{% include '_theme.html' %}
+<style>
+:root{--side:262px}
+body{background:var(--bg)}
+/* layout */
+.shell{display:grid;grid-template-columns:var(--side) 1fr;min-height:100vh}
+aside{position:sticky;top:0;height:100vh;display:flex;flex-direction:column;padding:20px 16px;background:linear-gradient(180deg,#0a0e18,#070a12);border-right:1px solid var(--line);z-index:60}
+aside .brand{padding:6px 8px 22px}
+.nav-l{display:grid;gap:3px}
+.nav-l a{display:flex;align-items:center;gap:12px;padding:11px 13px;border-radius:12px;color:var(--tx2);font-weight:600;font-size:14px;transition:all .2s;position:relative}
+.nav-l a i{width:18px;text-align:center;font-size:14px}
+.nav-l a:hover{background:rgba(255,255,255,.04);color:var(--tx)}
+.nav-l a.active{background:linear-gradient(90deg,rgba(91,140,255,.16),rgba(91,140,255,.04));color:var(--acc2)}
+.nav-l a.active::before{content:"";position:absolute;left:-16px;top:10px;bottom:10px;width:3px;border-radius:0 3px 3px 0;background:var(--grad)}
+.nav-l .cnt{margin-left:auto;font:600 11px var(--mono);padding:2px 8px;border-radius:999px;background:var(--s3);color:var(--tx2)}
+.side-card{margin-top:22px;padding:14px;border-radius:16px;background:var(--s2);border:1px solid var(--line)}
+.side-card small{display:block;color:var(--tx3);font-size:11.5px;margin-bottom:10px}
+.hint{display:flex;justify-content:space-between;align-items:center;color:var(--tx2);font-size:12.5px;padding:5px 0}
+kbd{font:600 11px var(--mono);padding:3px 7px;border-radius:6px;background:var(--s3);border:1px solid var(--line2);color:var(--tx2)}
+.side-foot{margin-top:auto;display:flex;align-items:center;gap:10px;padding:12px;border-radius:14px;background:var(--s2);border:1px solid var(--line)}
+.avatar{display:grid;place-items:center;width:36px;height:36px;border-radius:11px;background:var(--grad);color:#04101f;font-weight:800}
+.side-foot b{display:block;font-size:13.5px}.side-foot span{font-size:11.5px;color:var(--tx3)}
+.side-foot a{margin-left:auto}
+main{min-width:0}
+.topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:12px;padding:14px 28px;background:rgba(6,8,15,.8);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
+.topbar h2{font-size:20px;font-weight:700;margin-right:auto;display:flex;align-items:center;gap:10px}
+.menu-btn{display:none}
+.search{position:relative;width:min(340px,38vw)}
+.search i{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--tx3);font-size:13px}
+.search .input{padding:10px 56px 10px 38px;border-radius:12px;font-size:14px}
+.search kbd{position:absolute;right:10px;top:50%;transform:translateY(-50%)}
+.live-chip{display:flex;align-items:center;gap:8px;padding:8px 13px;border-radius:12px;border:1px solid var(--line2);background:rgba(255,255,255,.03);font-size:12.5px;font-weight:600;color:var(--tx2);cursor:pointer;transition:all .2s}
+.live-chip:hover{border-color:#3b4a6b}
+.live-chip s{width:8px;height:8px;border-radius:50%;background:var(--tx3);text-decoration:none}
+.live-chip.on{color:var(--ok);border-color:rgba(52,211,153,.35);background:rgba(52,211,153,.07)}
+.live-chip.on s{background:var(--ok);animation:pulseDot 1.8s infinite}
+.page{padding:28px;max-width:1440px;margin-inline:auto;display:grid;gap:28px}
+section.blk{scroll-margin-top:90px}
+.blk-h{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:16px;flex-wrap:wrap}
+.blk-h h3{font-size:22px;font-weight:700}
+.blk-h p{margin:6px 0 0;color:var(--tx3);font-size:13.5px}
+
+/* panels */
+.panel{background:linear-gradient(180deg,var(--s2),var(--s1));border:1px solid var(--line);border-radius:var(--r-lg);position:relative;overflow:hidden}
+.panel.pad{padding:22px}
+.panel-h{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px}
+.panel-h h4{font-size:16px;font-weight:700}
+.panel-h small{color:var(--tx3);font-size:12.5px}
+
+/* KPI */
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.kpi{padding:20px 22px;border-radius:var(--r-lg);background:linear-gradient(180deg,var(--s2),var(--s1));border:1px solid var(--line);position:relative;overflow:hidden;transition:transform .3s var(--ease),border-color .3s}
+.kpi:hover{transform:translateY(-3px);border-color:var(--kc)}
+.kpi::after{content:"";position:absolute;right:-30px;top:-30px;width:120px;height:120px;border-radius:50%;background:var(--kc);opacity:.1;filter:blur(24px)}
+.kpi .top{display:flex;justify-content:space-between;align-items:center;color:var(--tx2);font-size:13.5px;font-weight:600}
+.kpi .ic{display:grid;place-items:center;width:38px;height:38px;border-radius:12px;background:color-mix(in srgb,var(--kc) 15%,transparent);color:var(--kc)}
+.kpi .num{font:800 38px/1 var(--display);letter-spacing:-.03em;margin:16px 0 6px}
+.kpi .sub{font-size:12.5px;color:var(--tx3)}
+.kpi .bar{height:4px;border-radius:4px;background:var(--line);margin-top:14px;overflow:hidden}
+.kpi .bar i{display:block;height:100%;width:0;background:var(--kc);border-radius:4px;transition:width 1s var(--ease)}
+
+/* insights */
+.ins{display:grid;grid-template-columns:1.1fr 1fr 1fr;gap:16px}
+.donut-wrap{display:flex;align-items:center;gap:22px;flex-wrap:wrap}
+.donut{position:relative;width:150px;height:150px;flex-shrink:0}
+.donut svg{transform:rotate(-90deg)}
+.donut circle{fill:none;stroke-width:16;transition:stroke-dasharray 1s var(--ease),stroke-dashoffset 1s var(--ease)}
+.donut .mid{position:absolute;inset:0;display:grid;place-items:center;text-align:center}
+.donut .mid b{display:block;font:800 30px/1 var(--display)}
+.donut .mid span{font-size:11.5px;color:var(--tx3)}
+.legend{display:grid;gap:10px;font-size:13.5px;flex:1;min-width:130px}
+.legend div{display:flex;align-items:center;gap:10px;color:var(--tx2)}
+.legend i{width:10px;height:10px;border-radius:3px}
+.legend b{margin-left:auto;color:var(--tx);font-family:var(--mono);font-size:13px}
+.hbars{display:grid;gap:14px}
+.hb .l{display:flex;justify-content:space-between;font-size:13px;color:var(--tx2);margin-bottom:6px}
+.hb .l b{color:var(--tx);font-family:var(--mono)}
+.hb .t{height:8px;border-radius:8px;background:var(--line);overflow:hidden}
+.hb .t i{display:block;height:100%;width:0;border-radius:8px;background:var(--grad);transition:width 1s var(--ease)}
+.minis{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:20px}
+.mini{padding:12px 14px;border-radius:12px;background:var(--bg);border:1px solid var(--line)}
+.mini small{display:block;color:var(--tx3);font-size:11.5px}
+.mini b{font:700 17px var(--display)}
+.soon{display:grid;gap:8px;max-height:236px;overflow:auto}
+.soon .it{display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:12px;background:var(--bg);border:1px solid var(--line);font-size:13px;cursor:pointer;transition:border-color .2s}
+.soon .it:hover{border-color:var(--line2)}
+.soon .it b{font-family:var(--mono);font-weight:600}
+.soon .it .badge{margin-left:auto}
+.empty-s{display:grid;place-items:center;text-align:center;color:var(--tx3);padding:30px 10px;font-size:13.5px;gap:8px}
+.empty-s i{font-size:26px;color:var(--ok)}
+
+/* create */
+.create-grid{display:grid;grid-template-columns:1.6fr 1fr;gap:16px}
+.form-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.span3{grid-column:span 3}
+.pwrow{position:relative}
+.pwrow .input{padding-right:84px;font-family:var(--mono);font-size:13.5px}
+.pwrow .tools{position:absolute;right:6px;top:50%;transform:translateY(-50%);display:flex;gap:2px}
+.pwrow .tools button{width:30px;height:30px;border:0;background:none;color:var(--tx3);border-radius:8px}
+.pwrow .tools button:hover{background:rgba(255,255,255,.06);color:var(--tx)}
+.strength{display:flex;gap:4px;margin-top:8px}
+.strength i{flex:1;height:4px;border-radius:4px;background:var(--line);transition:background .25s}
+.note{margin-top:8px;font-size:12.5px;color:var(--tx3);display:flex;gap:8px;align-items:flex-start}
+.note.info{color:var(--acc2)}
+.cpu-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;font-size:12.5px;font-weight:600;color:var(--tx2)}
+.cpu-head b{font:700 18px var(--display);color:var(--acc2)}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:8px;border-radius:8px;background:linear-gradient(90deg,var(--ok),var(--warn),var(--bad));outline:none;cursor:pointer}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:#fff;border:4px solid var(--acc);box-shadow:0 4px 14px rgba(0,0,0,.5);transition:transform .15s}
+input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.15)}
+input[type=range]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:#fff;border:4px solid var(--acc)}
+.presets{display:flex;gap:7px;flex-wrap:wrap}
+.pre{padding:7px 13px;border-radius:10px;border:1px solid var(--line2);background:rgba(255,255,255,.03);font-size:12.5px;font-weight:600;color:var(--tx2);transition:all .2s}
+.pre:hover{color:var(--tx);border-color:var(--acc);background:rgba(91,140,255,.1)}
+.tpls{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.tpl{display:flex;align-items:center;gap:9px;padding:10px 15px;border-radius:12px;border:1px solid var(--line2);background:rgba(255,255,255,.025);font-size:13px;font-weight:600;transition:all .25s var(--ease)}
+.tpl:hover{transform:translateY(-2px);border-color:var(--tc);background:color-mix(in srgb,var(--tc) 10%,transparent);box-shadow:0 10px 24px -12px var(--tc)}
+.tpl i{color:var(--tc)}
+.preview{position:sticky;top:90px;align-self:start}
+.pv-card{padding:20px;border-radius:16px;background:var(--bg);border:1px dashed var(--line2)}
+.pv-top{display:flex;align-items:center;gap:12px;margin-bottom:18px}
+.pv-top .avatar{width:44px;height:44px;border-radius:14px;font-size:17px}
+.pv-top b{display:block;font-size:15px;word-break:break-all}
+.pv-top small{color:var(--tx3);font-size:12px}
+.pv-row{display:flex;justify-content:space-between;gap:10px;padding:9px 0;border-top:1px solid var(--line);font-size:13px;color:var(--tx3)}
+.pv-row b{color:var(--tx);font-weight:600;text-align:right}
+.pv-actions{display:flex;gap:10px;margin-top:20px}
+.pv-actions .btn{flex:1}
+
+/* servers table */
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;padding:16px 18px;border-bottom:1px solid var(--line)}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.fchip{padding:7px 13px;border-radius:10px;border:1px solid var(--line2);background:transparent;font-size:12.5px;font-weight:600;color:var(--tx2);display:flex;gap:7px;align-items:center;transition:all .2s}
+.fchip:hover{color:var(--tx);border-color:#3b4a6b}
+.fchip.on{background:rgba(91,140,255,.14);border-color:var(--acc);color:var(--acc2)}
+.fchip em{font:600 11px var(--mono);font-style:normal;padding:1px 7px;border-radius:99px;background:var(--s3);color:var(--tx2)}
+.toolbar .sp{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}
+.toolbar select.input{width:auto;padding:8px 36px 8px 12px;font-size:12.5px;border-radius:10px}
+.bulk{display:none;align-items:center;gap:10px;padding:12px 18px;background:rgba(91,140,255,.1);border-bottom:1px solid rgba(91,140,255,.3);font-size:13.5px;font-weight:600;color:var(--acc2);flex-wrap:wrap;animation:fadeDown .25s}
+.bulk.show{display:flex}
+@keyframes fadeDown{from{opacity:0;transform:translateY(-6px)}}
+.bulk .sp{margin-left:auto;display:flex;gap:8px}
+.tbl-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:1000px}
+thead th{padding:13px 16px;text-align:left;font-size:12.5px;font-weight:600;color:var(--tx3);background:rgba(0,0,0,.2);white-space:nowrap;user-select:none}
+thead th.sortable{cursor:pointer}
+thead th.sortable:hover{color:var(--tx)}
+thead th .ar{margin-left:6px;opacity:.35;font-size:10px}
+thead th.sorted{color:var(--acc2)}
+thead th.sorted .ar{opacity:1}
+tbody td{padding:14px 16px;border-top:1px solid var(--line);font-size:13.5px;vertical-align:middle}
+tbody tr{transition:background .2s}
+tbody tr:hover{background:rgba(255,255,255,.025)}
+tbody tr.sel{background:rgba(91,140,255,.07)}
+tbody tr.hide{display:none}
+body.compact tbody td{padding:8px 16px}
+.ck{width:44px;padding-right:0!important}
+input[type=checkbox]{appearance:none;-webkit-appearance:none;width:18px;height:18px;border-radius:6px;border:1.5px solid var(--line2);background:var(--bg);display:grid;place-items:center;cursor:pointer;transition:all .15s;margin:0}
+input[type=checkbox]:checked{background:var(--acc);border-color:var(--acc)}
+input[type=checkbox]:checked::after{content:"\f00c";font-family:"Font Awesome 6 Free";font-weight:900;font-size:10px;color:#04101f}
+.u{display:flex;align-items:center;gap:11px}
+.u .avatar{width:34px;height:34px;border-radius:11px;font-size:13px}
+.u b{font-family:var(--mono);font-weight:600;font-size:13.5px}
+.u small{display:block;color:var(--tx3);font-size:11.5px}
+.pwc{display:flex;align-items:center;gap:4px;font-family:var(--mono);color:var(--tx2);font-size:13px}
+.ib{width:28px;height:28px;border:0;border-radius:8px;background:none;color:var(--tx3);transition:all .15s}
+.ib:hover{background:rgba(255,255,255,.07);color:var(--tx)}
+.link{display:flex;align-items:center;gap:6px;color:var(--acc2);font-family:var(--mono);font-size:12.5px}
+.link:hover{color:#fff}
+.cfg{display:flex;gap:6px;flex-wrap:wrap}
+.cfg span{padding:3px 9px;border-radius:8px;background:var(--s3);font-size:12px;color:var(--tx2);font-weight:600}
+.cfg span.t{background:rgba(91,140,255,.12);color:var(--acc2)}
+.cpu{display:flex;align-items:center;gap:10px}
+.cpu .t{width:64px;height:6px;border-radius:6px;background:var(--line);overflow:hidden}
+.cpu .t i{display:block;height:100%;border-radius:6px}
+.cpu b{font:600 12.5px var(--mono);min-width:38px}
+.exp{display:flex;flex-direction:column;gap:5px;align-items:flex-start}
+.exp small{color:var(--tx3);font-size:12px;font-family:var(--mono)}
+.acts{display:flex;gap:6px}
+.acts .btn{width:32px;height:32px;padding:0;border-radius:10px;font-size:12.5px}
+.empty-row td{padding:60px 20px!important;text-align:center;color:var(--tx3)}
+.empty-row i{font-size:34px;margin-bottom:12px;display:block;opacity:.5}
+.tfoot{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;border-top:1px solid var(--line);color:var(--tx3);font-size:12.5px;flex-wrap:wrap;gap:8px}
+.skel{position:relative}
+.skel::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.04),transparent);animation:sh 1s infinite}
+@keyframes sh{from{transform:translateX(-100%)}to{transform:translateX(100%)}}
+
+/* command palette */
+#pal{position:fixed;inset:0;z-index:200;display:none;align-items:flex-start;justify-content:center;padding-top:14vh;background:rgba(3,5,10,.7);backdrop-filter:blur(6px)}
+#pal.open{display:flex;animation:fade .2s}
+@keyframes fade{from{opacity:0}}
+.pal-box{width:min(600px,92vw);border-radius:20px;background:var(--s2);border:1px solid var(--line2);box-shadow:0 40px 100px -20px rgba(0,0,0,.9);overflow:hidden;animation:pop .25s var(--ease)}
+@keyframes pop{from{transform:translateY(-12px) scale(.98);opacity:0}}
+.pal-in{display:flex;align-items:center;gap:12px;padding:16px 20px;border-bottom:1px solid var(--line)}
+.pal-in i{color:var(--tx3)}
+.pal-in input{flex:1;background:none;border:0;outline:0;font-size:16px}
+.pal-list{max-height:340px;overflow:auto;padding:8px}
+.pal-it{display:flex;align-items:center;gap:13px;padding:11px 13px;border-radius:12px;cursor:pointer;font-size:14px;color:var(--tx2)}
+.pal-it i{width:30px;height:30px;display:grid;place-items:center;border-radius:9px;background:var(--s3);font-size:13px;color:var(--acc2)}
+.pal-it.on{background:rgba(91,140,255,.14);color:var(--tx)}
+.pal-it small{margin-left:auto;color:var(--tx3);font-size:11.5px}
+.pal-foot{display:flex;gap:16px;padding:11px 18px;border-top:1px solid var(--line);color:var(--tx3);font-size:12px}
+
+/* SweetAlert dark theme */
+.swal2-popup{background:var(--s2)!important;color:var(--tx)!important;border:1px solid var(--line2)!important;border-radius:22px!important;font-family:var(--body)!important;box-shadow:0 40px 100px -20px rgba(0,0,0,.9)!important}
+.swal2-title{font-family:var(--display)!important;font-weight:700!important;letter-spacing:-.02em!important}
+.swal2-html-container{color:var(--tx2)!important}
+.swal2-styled.swal2-confirm{background:var(--grad)!important;color:#04101f!important;font-weight:700!important;border-radius:12px!important;box-shadow:none!important}
+.swal2-styled.swal2-cancel{background:var(--s3)!important;color:var(--tx)!important;border-radius:12px!important}
+.swal2-styled.swal2-deny{border-radius:12px!important}
+.swal2-timer-progress-bar{background:var(--acc)!important}
+.swal2-toast{background:var(--s2)!important;border:1px solid var(--line2)!important;border-radius:14px!important;color:var(--tx)!important}
+.swal2-input,.swal2-range input{background:var(--bg)!important;color:var(--tx)!important}
+.cred{display:grid;gap:8px;text-align:left;margin-top:6px}
+.cred div{display:flex;align-items:center;gap:10px;padding:11px 14px;border-radius:12px;background:var(--bg);border:1px solid var(--line)}
+.cred small{color:var(--tx3);width:74px;font-size:12px;flex-shrink:0}
+.cred code{font:500 13px var(--mono);color:var(--tx);flex:1;word-break:break-all}
+.cred button{border:0;background:none;color:var(--tx3);width:28px;height:28px;border-radius:8px}
+.cred button:hover{background:rgba(255,255,255,.07);color:var(--tx)}
+.big-cpu{font:800 44px var(--display);color:var(--acc2);margin-top:6px}
+
+/* responsive */
+.backdrop{display:none}
+@media(max-width:1180px){.kpis{grid-template-columns:repeat(2,1fr)}.ins{grid-template-columns:1fr 1fr}.ins>:first-child{grid-column:span 2}.create-grid{grid-template-columns:1fr}.preview{position:static}}
+@media(max-width:900px){
+  .shell{grid-template-columns:1fr}
+  aside{position:fixed;left:0;top:0;bottom:0;width:var(--side);transform:translateX(-100%);transition:transform .35s var(--ease)}
+  body.menu aside{transform:none}
+  body.menu .backdrop{display:block;position:fixed;inset:0;background:rgba(3,5,10,.7);z-index:55}
+  .menu-btn{display:grid}
+  .topbar{padding:12px 16px}.page{padding:18px 16px}
+  .search{display:none}
+  .topbar h2 span.t{display:none}
+  .form-grid{grid-template-columns:1fr 1fr}.span3{grid-column:span 2}
+  .ins{grid-template-columns:1fr}.ins>:first-child{grid-column:auto}
+  table{min-width:0}
+  thead{display:none}
+  tbody tr{display:grid;grid-template-columns:1fr 1fr;gap:4px 14px;padding:16px;border-top:1px solid var(--line);position:relative}
+  tbody td{border:0!important;padding:6px 0!important;display:block}
+  tbody td::before{content:attr(data-label);display:block;font-size:11px;color:var(--tx3);margin-bottom:4px;font-weight:600}
+  tbody td.ck{position:absolute;right:14px;top:14px;width:auto;padding:0!important}
+  tbody td.ck::before{display:none}
+  tbody td[data-label="User"],tbody td[data-label="Actions"]{grid-column:span 2}
+  .empty-row{display:block!important}.empty-row td::before{display:none}
+}
+@media(max-width:560px){.kpis{grid-template-columns:1fr 1fr;gap:12px}.kpi{padding:16px}.kpi .num{font-size:30px}.form-grid{grid-template-columns:1fr}.span3{grid-column:span 1}.live-chip span{display:none}}
+/* ===== v3 admin tools ===== */
+.hidden{display:none!important}
+.warnbar{display:flex;gap:12px;align-items:flex-start;padding:14px 16px;border-radius:16px;background:rgba(251,191,36,.08);border:1px solid rgba(251,191,36,.35);color:var(--warn);font-size:13.5px}
+.warnbar i{margin-top:3px}.warnbar a{color:#fff;font-weight:700;text-decoration:underline;cursor:pointer}
+.mon{display:grid;grid-template-columns:minmax(0,1fr);gap:16px;margin-top:16px}
+.mon-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.mg{padding:12px 8px;border-radius:16px;background:var(--bg);border:1px solid var(--line);text-align:center;min-width:0}
+.mg .rg{position:relative;width:92px;max-width:100%;aspect-ratio:1;margin:0 auto 6px}
+.mg .rg svg{transform:rotate(-90deg);width:100%;height:100%}
+.mg .rg circle{fill:none;stroke-width:9;stroke-linecap:round}
+.mg .rg .bg{stroke:var(--line)}
+.mg .rg .fg{stroke-dasharray:264;stroke-dashoffset:264;transition:stroke-dashoffset .8s var(--ease),stroke .4s}
+.mg .rg b{position:absolute;inset:0;display:grid;place-items:center;font:700 17px var(--display)}
+.mg small{display:block;color:var(--tx3);font-size:12px}
+.mg .spk{display:block;width:100%;height:26px;margin-top:8px}
+.kv{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:14px}
+.kv div{padding:10px 12px;border-radius:12px;background:var(--bg);border:1px solid var(--line);font-size:12px;color:var(--tx3);min-width:0}
+.kv b{display:block;margin-top:2px;font:600 13px var(--mono);color:var(--tx);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rt-mini{display:grid;gap:10px}
+.rt-i{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:14px;background:var(--bg);border:1px solid var(--line);min-width:0}
+.rt-i .ic{display:grid;place-items:center;width:38px;height:38px;border-radius:12px;font-size:16px;flex-shrink:0}
+.rt-i b{display:block;font-size:14px}.rt-i small{display:block;color:var(--tx3);font:12px var(--mono);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rt-i .badge{margin-left:auto;flex-shrink:0}
+.rt-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:16px}
+.rt-card{padding:20px}
+.rt-card .top{display:flex;align-items:center;gap:14px;margin-bottom:14px}
+.rt-card .top .ic{display:grid;place-items:center;width:46px;height:46px;border-radius:14px;font-size:20px}
+.rt-card h4{font-size:17px}.rt-card .top small{display:block;color:var(--tx3);font-size:12.5px;margin-top:2px}
+.rt-card .path{font:12px var(--mono);color:var(--tx3);word-break:break-all;margin:6px 0 14px}
+.rt-card .acts2{display:flex;gap:8px;flex-wrap:wrap}
+.jobbar{height:8px;border-radius:8px;background:var(--line);overflow:hidden;margin:12px 0 8px}
+.jobbar i{display:block;height:100%;width:0;background:var(--grad);border-radius:8px;transition:width .4s}
+.joblog{font:11.5px/1.6 var(--mono);color:#8c97b3;background:#05070c;border:1px solid var(--line);border-radius:12px;padding:10px 12px;max-height:130px;overflow:auto;white-space:pre-wrap;overflow-wrap:anywhere}
+.tl{display:grid;gap:0;padding:6px 6px 6px 22px;position:relative;max-height:560px;overflow:auto}
+.tl::before{content:"";position:absolute;left:30px;top:14px;bottom:14px;width:2px;background:var(--line)}
+.tl .ev{display:flex;gap:14px;align-items:flex-start;padding:10px 8px;position:relative;font-size:13.5px}
+.tl .ev .dot{position:relative;z-index:1;display:grid;place-items:center;width:18px;height:18px;border-radius:50%;background:var(--s3);border:2px solid var(--line2);font-size:8px;flex-shrink:0;margin-top:2px;color:var(--ec)}
+.tl .ev b{color:var(--tx);font-weight:600}
+.tl .ev small{display:block;color:var(--tx3);font:11.5px var(--mono);margin-top:2px}
+.sw{position:relative;display:inline-block;width:46px;height:26px;flex-shrink:0}
+.sw input{position:absolute;opacity:0;inset:0;width:100%;height:100%;margin:0;cursor:pointer;z-index:2}
+.sw i{position:absolute;inset:0;border-radius:26px;background:var(--line2);transition:.25s}
+.sw i::after{content:"";position:absolute;left:3px;top:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:.25s}
+.sw input:checked+i{background:var(--acc)}.sw input:checked+i::after{transform:translateX(20px)}
+.set-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:16px}
+.set-row{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 0;border-top:1px solid var(--line)}
+.set-row:first-of-type{border-top:0}
+.set-row b{display:block;font-size:14px}.set-row small{display:block;color:var(--tx3);font-size:12.5px;margin-top:2px}
+.f2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.drawer-bg{position:fixed;inset:0;z-index:150;background:rgba(3,5,10,.7);backdrop-filter:blur(4px);animation:fade .2s}
+.drawer{position:fixed;top:0;right:0;bottom:0;z-index:151;width:min(560px,100%);background:var(--s2);border-left:1px solid var(--line2);display:flex;flex-direction:column;animation:slideIn .3s var(--ease);box-shadow:-30px 0 80px -20px rgba(0,0,0,.8)}
+@keyframes slideIn{from{transform:translateX(40px);opacity:0}}
+.dr-h{display:flex;align-items:center;gap:12px;padding:16px 18px;border-bottom:1px solid var(--line);padding-top:calc(16px + env(safe-area-inset-top,0))}
+.dr-h .t{min-width:0;flex:1}.dr-h b{display:block;font:700 16px var(--display);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dr-h small{display:block;color:var(--tx3);font:12px var(--mono);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dr-tabs{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:4px;padding:8px 12px;border-bottom:1px solid var(--line)}
+.dr-tabs button{padding:10px 4px;border-radius:11px;border:0;background:none;color:var(--tx3);font-weight:600;font-size:13px;white-space:nowrap}
+.dr-tabs button.on{background:rgba(91,140,255,.14);color:var(--acc2)}
+.dr-b{flex:1;overflow-y:auto;padding:16px 18px calc(24px + env(safe-area-inset-bottom,0))}
+.dr-b .sec{margin-bottom:22px}.dr-b h5{margin:0 0 10px;font-size:12px;color:var(--tx3);font-weight:600;letter-spacing:.01em}
+.kvl{display:grid;gap:0;border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.kvl div{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 14px;border-top:1px solid var(--line);font-size:13px;color:var(--tx3);min-width:0}
+.kvl div:first-child{border-top:0}
+.kvl b{color:var(--tx);font-weight:600;text-align:right;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:12.5px}
+.btn-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.btn-grid .btn{width:100%}
+.dr-log{font:11.5px/1.6 var(--mono);color:#cfd6ea;background:#05070c;border:1px solid var(--line);border-radius:14px;padding:12px;height:52vh;overflow:auto;white-space:pre-wrap;overflow-wrap:anywhere}
+.dr-note{width:100%;min-height:70px;resize:vertical}
+@media(min-width:1100px){.mon{grid-template-columns:minmax(0,1.7fr) minmax(0,1fr)}.rt-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.set-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:560px){.kv{grid-template-columns:1fr}.f2{grid-template-columns:1fr}.mg .rg{width:76px}}
+</style>
+</head>
+<body>
+<div class="backdrop" id="backdrop"></div>
+<div class="shell">
+
+<aside>
+  <a class="brand" href="/admin"><span class="logo-mark"><i class="fas fa-cloud-upload-alt"></i></span><span>SHADOW <small>HOSTING</small></span></a>
+  <nav class="nav-l" id="sideNav">
+    <a href="#overview" class="active"><i class="fas fa-chart-pie"></i> Overview</a>
+    <a href="#create"><i class="fas fa-circle-plus"></i> Create Server</a>
+    <a href="#servers"><i class="fas fa-server"></i> Servers <span class="cnt" id="navCount">{{ total_servers }}</span></a>
+    <a href="#accounts"><i class="fas fa-users"></i> Accounts</a>
+    <a href="#sites"><i class="fas fa-globe"></i> Website links</a>
+    <a href="#activity"><i class="fas fa-clock-rotate-left"></i> Activity</a>
+    <a href="#runtime"><i class="fas fa-screwdriver-wrench"></i> Runtimes</a>
+    <a href="#settings"><i class="fas fa-sliders"></i> Settings</a>
+    <a href="/" target="_blank"><i class="fas fa-arrow-up-right-from-square"></i> View Website</a>
+  </nav>
+  <div class="side-card">
+    <small>Shortcuts</small>
+    <div class="hint">Command palette <kbd>Ctrl K</kbd></div>
+    <div class="hint">New server <kbd>Ctrl N</kbd></div>
+    <div class="hint">Refresh data <kbd>Ctrl R</kbd></div>
+  </div>
+  <div class="side-foot">
+    <div class="avatar"><i class="fas fa-user-shield" style="font-size:14px"></i></div>
+    <div><b>admin</b><span>Control Panel</span></div>
+    <a href="/logout" class="btn btn-bad btn-icon btn-sm" title="Logout"><i class="fas fa-sign-out-alt"></i></a>
+  </div>
+</aside>
+
+<main>
+  <header class="topbar">
+    <button class="btn btn-ghost btn-icon menu-btn" id="menuBtn" aria-label="Menu"><i class="fas fa-bars"></i></button>
+    <h2><span class="t">Admin Control Panel</span></h2>
+    <div class="search"><i class="fas fa-search"></i><input class="input" id="globalSearch" placeholder="Search users, server IDs…" autocomplete="off"><kbd>/</kbd></div>
+    <button class="live-chip" id="liveChip" title="Auto refresh every 15 seconds"><s></s><span>Live refresh</span></button>
+    <button class="btn btn-ghost btn-icon" id="refreshBtn" title="Refresh (Ctrl+R)"><i class="fas fa-sync-alt"></i></button>
+    <button class="btn btn-ghost btn-icon" id="palBtn" title="Command palette (Ctrl+K)"><i class="fas fa-terminal"></i></button>
+  </header>
+
+  <div class="page">
+    <div class="warnbar hidden" id="pwWarn"><i class="fas fa-triangle-exclamation"></i><div><b>You are still using the default admin password.</b> Anyone who knows it can take over this panel. <a>Change it now</a></div></div>
+
+    <!-- OVERVIEW -->
+    <section class="blk" id="overview">
+      <div class="kpis">
+        <div class="kpi" style="--kc:#5b8cff"><div class="top">Total Users<div class="ic"><i class="fas fa-users"></i></div></div><div class="num" id="totalUsers">{{ users|length }}</div><div class="sub" id="kpiUsersSub">Registered accounts</div><div class="bar"><i id="kbUsers"></i></div></div>
+        <div class="kpi" style="--kc:#34d399"><div class="top">Total Servers<div class="ic"><i class="fas fa-server"></i></div></div><div class="num" id="totalServers">{{ total_servers }}</div><div class="sub" id="kpiServersSub">Across all users</div><div class="bar"><i id="kbServers"></i></div></div>
+        <div class="kpi" style="--kc:#fbbf24"><div class="top">Running<div class="ic"><i class="fas fa-play-circle pulse-dot" style="border-radius:50%"></i></div></div><div class="num" id="totalRunning">{{ total_running }}</div><div class="sub" id="kpiRunSub">Online right now</div><div class="bar"><i id="kbRun"></i></div></div>
+        <div class="kpi" style="--kc:#a78bfa"><div class="top">Stopped<div class="ic"><i class="fas fa-stop-circle"></i></div></div><div class="num" id="totalStopped">{{ total_servers - total_running }}</div><div class="sub" id="kpiStopSub">Offline or limited</div><div class="bar"><i id="kbStop"></i></div></div>
+      </div>
+
+      <div class="ins" style="margin-top:16px">
+        <div class="panel pad">
+          <div class="panel-h"><h4>Server health</h4><small>Live status split</small></div>
+          <div class="donut-wrap">
+            <div class="donut"><svg viewBox="0 0 120 120" width="150" height="150"><circle cx="60" cy="60" r="46" stroke="#1c2438"/><g id="donutArcs"></g></svg><div class="mid"><div><b id="donutTotal">0</b><span>servers</span></div></div></div>
+            <div class="legend" id="donutLegend"></div>
+          </div>
+        </div>
+        <div class="panel pad">
+          <div class="panel-h"><h4>Capacity</h4><small>Allocated resources</small></div>
+          <div class="hbars" id="typeBars"></div>
+          <div class="minis">
+            <div class="mini"><small>RAM allocated</small><b id="sumRam">0</b></div>
+            <div class="mini"><small>Disk allocated</small><b id="sumDisk">0</b></div>
+            <div class="mini"><small>Avg CPU limit</small><b id="avgCpu">0%</b></div>
+            <div class="mini"><small>Top user</small><b id="topUser">-</b></div>
+          </div>
+        </div>
+        <div class="panel pad">
+          <div class="panel-h"><h4>Needs attention</h4><small id="soonSub">Expiring within 7 days</small></div>
+          <div class="soon" id="soonList"></div>
+        </div>
+      </div>
+
+      <div class="mon">
+        <div class="panel pad">
+          <div class="panel-h"><h4>System monitor</h4><small id="monSub">Live, every 5 seconds</small></div>
+          <div class="mon-grid">
+            <div class="mg"><div class="rg"><svg viewBox="0 0 100 100"><circle class="bg" cx="50" cy="50" r="42"/><circle class="fg" id="rgCpu" cx="50" cy="50" r="42" stroke="#34d399"/></svg><b id="vCpu">0%</b></div><small>CPU <span id="vCores"></span></small><svg class="spk" id="spkCpu" viewBox="0 0 100 30" preserveAspectRatio="none"></svg></div>
+            <div class="mg"><div class="rg"><svg viewBox="0 0 100 100"><circle class="bg" cx="50" cy="50" r="42"/><circle class="fg" id="rgRam" cx="50" cy="50" r="42" stroke="#b7a6ff"/></svg><b id="vRam">0%</b></div><small>RAM <span id="vRamTxt"></span></small><svg class="spk" id="spkRam" viewBox="0 0 100 30" preserveAspectRatio="none"></svg></div>
+            <div class="mg"><div class="rg"><svg viewBox="0 0 100 100"><circle class="bg" cx="50" cy="50" r="42"/><circle class="fg" id="rgDisk" cx="50" cy="50" r="42" stroke="#38d3f5"/></svg><b id="vDisk">0%</b></div><small>Disk <span id="vDiskTxt"></span></small></div>
+          </div>
+          <div class="kv" id="sysKv"></div>
+        </div>
+        <div class="panel pad">
+          <div class="panel-h"><h4>Runtime health</h4><small>Node.js and Cloudflare tunnel</small></div>
+          <div class="rt-mini" id="rtMini"></div>
+          <div style="margin-top:12px"><a href="#runtime" class="btn btn-ghost btn-sm" style="width:100%">Manage runtimes</a></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CREATE -->
+    <section class="blk" id="create">
+      <div class="blk-h"><div><h3>Create new server</h3><p>Pick a template or fill in the details. A live summary is shown on the right.</p></div></div>
+      <div class="create-grid">
+        <div class="panel pad">
+          <div class="form-grid" id="createForm">
+            <label class="field"><span>Username *</span>
+              <input type="text" id="newUsername" placeholder="Enter username" class="input" autocomplete="off">
+              <div class="note info" id="userNote" style="display:none"></div></label>
+            <label class="field"><span>Password *</span>
+              <div class="pwrow"><input type="text" id="newPassword" placeholder="Enter password" class="input" autocomplete="off">
+                <div class="tools"><button type="button" id="pwGen" title="Generate"><i class="fas fa-wand-magic-sparkles"></i></button><button type="button" id="pwCopy" title="Copy"><i class="far fa-copy"></i></button></div></div>
+              <div class="strength" id="strength"><i></i><i></i><i></i><i></i></div></label>
+            <label class="field"><span>Server Type</span>
+              <select id="serverType" class="input">
+                <option value="python">🐍 Python Bot</option>
+                <option value="node">💚 Node.js</option>
+                <option value="static">📄 Static Website</option>
+              </select></label>
+            <label class="field"><span>RAM</span>
+              <select id="ram" class="input">
+                <option value="128MB">128 MB</option><option value="256MB">256 MB</option><option value="512MB" selected>512 MB</option>
+                <option value="1GB">1 GB</option><option value="2GB">2 GB</option><option value="4GB">4 GB</option>
+              </select></label>
+            <label class="field"><span>Disk Space</span>
+              <select id="disk" class="input">
+                <option value="512MB">512 MB</option><option value="1GB" selected>1 GB</option><option value="2GB">2 GB</option>
+                <option value="5GB">5 GB</option><option value="10GB">10 GB</option>
+              </select></label>
+            <div class="field"><span>Expiry (Days)</span>
+              <input type="number" id="expiryDays" placeholder="30" value="30" min="1" max="365" class="input">
+              <div class="presets" style="margin-top:8px"><button type="button" class="pre" data-days="3">3d</button><button type="button" class="pre" data-days="7">7d</button><button type="button" class="pre" data-days="30">30d</button><button type="button" class="pre" data-days="90">90d</button></div></div>
+
+            <div class="span3">
+              <div class="cpu-head"><span><i class="fas fa-tachometer-alt" style="color:var(--acc2);margin-right:8px"></i>CPU Rate Limit</span><b id="cpuLimitValue">80%</b></div>
+              <input type="range" id="cpuLimit" min="10" max="100" value="80">
+              <div class="presets" style="margin-top:12px">
+                <button type="button" class="pre" onclick="setQuickCPU(30)" style="color:var(--ok)">30%</button>
+                <button type="button" class="pre" onclick="setQuickCPU(50)" style="color:var(--warn)">50%</button>
+                <button type="button" class="pre" onclick="setQuickCPU(80)" style="color:var(--acc2)">80%</button>
+                <button type="button" class="pre" onclick="setQuickCPU(100)" style="color:var(--bad)">100%</button>
+              </div>
+              <div class="note"><i class="fas fa-info-circle"></i> Server will auto-stop if CPU usage exceeds this limit (10-second average)</div>
+            </div>
+
+            <div class="span3 tpls">
+              <span style="font-size:12.5px;color:var(--tx3);font-weight:600"><i class="fas fa-bolt" style="margin-right:6px"></i>Quick templates</span>
+              <button type="button" class="tpl" style="--tc:#818cf8" onclick="quickTemplate('discord')"><i class="fab fa-discord"></i> Discord Bot</button>
+              <button type="button" class="tpl" style="--tc:#38bdf8" onclick="quickTemplate('telegram')"><i class="fab fa-telegram-plane"></i> Telegram Bot</button>
+              <button type="button" class="tpl" style="--tc:#34d399" onclick="quickTemplate('flask')"><i class="fas fa-flask"></i> Flask App</button>
+              <button type="button" class="tpl" style="--tc:#fbbf24" onclick="quickTemplate('node')"><i class="fab fa-node-js"></i> Node.js App</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel pad preview">
+          <div class="panel-h"><h4>Live summary</h4><small>Updates as you type</small></div>
+          <div class="pv-card">
+            <div class="pv-top"><div class="avatar" id="pvAv">?</div><div><b id="pvUser">New user</b><small id="pvType">Python Bot</small></div></div>
+            <div class="pv-row"><span>Resources</span><b id="pvRes">-</b></div>
+            <div class="pv-row"><span>CPU limit</span><b id="pvCpu">-</b></div>
+            <div class="pv-row"><span>Valid for</span><b id="pvDays">-</b></div>
+            <div class="pv-row"><span>Expires on</span><b id="pvExp">-</b></div>
+          </div>
+          <div class="pv-actions"><button class="btn btn-ghost" id="resetForm" type="button"><i class="fas fa-rotate-left"></i> Reset</button><button onclick="createServer()" class="btn btn-primary" type="button"><i class="fas fa-check"></i> Create Server</button></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SERVERS -->
+    <section class="blk" id="servers">
+      <div class="blk-h"><div><h3>User &amp; Server List</h3><p>Manage all users and their servers</p></div></div>
+      <div class="panel">
+        <div class="toolbar">
+          <div class="chips" id="chips">
+            <button class="fchip on" data-f="all">All <em id="cAll">0</em></button>
+            <button class="fchip" data-f="running">Running <em id="cRun">0</em></button>
+            <button class="fchip" data-f="stopped">Stopped <em id="cStop">0</em></button>
+            <button class="fchip" data-f="limited">Rate limited <em id="cLim">0</em></button>
+            <button class="fchip" data-f="suspended">Suspended <em id="cSusp">0</em></button>
+            <button class="fchip" data-f="soon">Expiring soon <em id="cSoon">0</em></button>
+            <button class="fchip" data-f="expired">Expired <em id="cExp">0</em></button>
+          </div>
+          <div class="sp">
+            <select class="input" id="typeFilter"><option value="">All types</option><option value="python">Python</option><option value="node">Node.js</option><option value="static">Static</option></select>
+            <button class="btn btn-ghost btn-sm" id="densBtn" title="Toggle compact rows"><i class="fas fa-grip-lines"></i></button>
+            <button class="btn btn-ghost btn-sm" id="csvBtn"><i class="fas fa-file-csv"></i> Export</button>
+            <button class="btn btn-ghost btn-sm" onclick="softRefresh(true)"><i class="fas fa-sync-alt"></i> Refresh</button>
+          </div>
+        </div>
+        <div class="bulk" id="bulk">
+          <span><i class="fas fa-check-double" style="margin-right:8px"></i><span id="bulkN">0</span> selected</span>
+          <div class="sp">
+            <button class="btn btn-ok btn-sm" id="bulkStart"><i class="fas fa-play"></i> Start</button>
+            <button class="btn btn-ghost btn-sm" id="bulkStop"><i class="fas fa-stop"></i> Stop</button>
+            <button class="btn btn-ghost btn-sm" id="bulkExtend"><i class="fas fa-calendar-plus"></i> Extend</button>
+            <button class="btn btn-warn btn-sm" id="bulkSuspend"><i class="fas fa-ban"></i> Suspend</button>
+            <button class="btn btn-ghost btn-sm" id="bulkUnsuspend"><i class="fas fa-lock-open"></i> Unsuspend</button>
+            <button class="btn btn-ghost btn-sm" id="bulkCpu"><i class="fas fa-tachometer-alt"></i> Set CPU limit</button>
+            <button class="btn btn-bad btn-sm" id="bulkDel"><i class="fas fa-trash"></i> Delete</button>
+            <button class="btn btn-ghost btn-sm" id="bulkClear">Clear</button>
+          </div>
+        </div>
+        <div class="tbl-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th class="ck"><input type="checkbox" id="ckAll" aria-label="Select all"></th>
+                <th class="sortable" data-s="user">User<span class="ar fas fa-sort"></span></th>
+                <th>Password</th>
+                <th>Server Link</th>
+                <th class="sortable" data-s="type">Config<span class="ar fas fa-sort"></span></th>
+                <th class="sortable" data-s="cpu">CPU Limit<span class="ar fas fa-sort"></span></th>
+                <th class="sortable" data-s="status">Status<span class="ar fas fa-sort"></span></th>
+                <th class="sortable" data-s="expiry">Expiry<span class="ar fas fa-sort"></span></th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="serversBody">
+              {% for user in users %}
+                {% for server in user.servers %}
+                <tr class="srow"
+                    data-id="{{ server.server_id }}" data-user="{{ user.username }}" data-pass="{{ user.password }}"
+                    data-type="{{ server.type }}" data-ram="{{ server.ram }}" data-disk="{{ server.disk }}"
+                    data-cpu="{{ server.cpu_limit | default(80) }}"
+                    data-status="{% if server.suspended %}suspended{% elif server.rate_limit_exceeded %}limited{% elif server.status == 'running' %}running{% else %}stopped{% endif %}"
+                    data-expiry="{{ server.expiry[:10] if server.expiry else '' }}"
+                    data-login="{{ server.login_url }}" data-srvuser="{{ server.srv_user or '' }}" data-srvpass="{{ server.srv_pass or '' }}">
+                  <td class="ck"><input type="checkbox" class="rowck" aria-label="Select server"></td>
+                  <td data-label="User">
+                    <div class="u"><div class="avatar">{{ user.username[0] | upper }}</div><div><b>{{ user.username }}</b><small>{{ user.server_count }} server{{ '' if user.server_count == 1 else 's' }}</small></div></div>
+                  </td>
+                  <td data-label="Password">
+                    <div class="pwc"><span class="pv" id="pass-{{ server.server_id }}">••••••••</span>
+                      <button class="ib" data-act="eye" title="Show / hide"><i class="fas fa-eye"></i></button>
+                      <button class="ib" data-act="copypw" title="Copy password"><i class="far fa-copy"></i></button></div>
+                  </td>
+                  <td data-label="Server Link">
+                    <div style="display:flex;align-items:center;gap:4px">
+                      <a href="{{ server.login_url }}" target="_blank" class="link"><i class="fas fa-external-link-alt" style="font-size:10px"></i>{{ server.server_id[:12] }}...</a>
+                      <button class="ib" data-act="copylink" title="Copy login link"><i class="far fa-copy"></i></button>
+                    </div>
+                  </td>
+                  <td data-label="Config">
+                    <div class="cfg"><span class="t">{{ server.type }}</span><span>{{ server.ram }}</span><span>{{ server.disk }}</span>{% if server.plan == 'free-test' %}<span style="color:var(--acc2)">free</span>{% endif %}</div>
+                  </td>
+                  <td data-label="CPU Limit">
+                    <div class="cpu"><div class="t"><i class="cpubar"></i></div><b class="cputx">{{ server.cpu_limit | default(80) }}%</b>
+                      <button class="ib" data-act="cpu" title="Change CPU Limit"><i class="fas fa-edit"></i></button></div>
+                  </td>
+                  <td data-label="Status">
+                    {% if server.suspended %}
+                    <span class="badge b-warn"><i class="fas fa-ban"></i> Suspended</span>
+                    {% elif server.rate_limit_exceeded %}
+                    <span class="badge b-warn"><i class="fas fa-exclamation-triangle"></i> Rate Limited</span>
+                    {% elif server.status == 'running' %}
+                    <span class="badge b-ok"><span class="dot pulse-dot"></span> Running</span>
+                    {% else %}
+                    <span class="badge b-bad"><span class="dot"></span> Stopped</span>
+                    {% endif %}
+                  </td>
+                  <td data-label="Expiry">
+                    <div class="exp"><small><i class="far fa-calendar-alt" style="margin-right:6px"></i>{{ server.expiry[:10] if server.expiry else 'N/A' }}</small><span class="badge b-mute expbadge" style="display:none"></span></div>
+                  </td>
+                  <td data-label="Actions">
+                    <div class="acts">
+                      <button class="btn btn-primary" data-act="manage" title="Manage server"><i class="fas fa-sliders"></i></button>
+                      <button class="btn btn-ghost" data-act="copycred" title="Copy login details"><i class="fas fa-key"></i></button>
+                      <button class="btn btn-warn" data-act="cpu" title="Change CPU Limit"><i class="fas fa-tachometer-alt"></i></button>
+                      <button class="btn btn-bad" data-act="del" title="Delete Server"><i class="fas fa-trash"></i></button>
+                    </div>
+                  </td>
+                </tr>
+                {% endfor %}
+              {% endfor %}
+              <tr class="empty-row" id="emptyRow" {% if total_servers > 0 %}style="display:none"{% endif %}><td colspan="9"><i class="fas fa-inbox"></i><span id="emptyMsg">No users found. Create your first server!</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="tfoot"><span id="showing">Showing 0 of 0</span><span><i class="far fa-clock" style="margin-right:6px"></i>Last updated <b id="lastUp">just now</b></span></div>
+      </div>
+    </section>
+    <!-- ACCOUNTS -->
+    <section class="blk" id="accounts">
+      <div class="blk-h"><div><h3>Accounts</h3><p>Self-registered users and users created by you</p></div></div>
+      <div class="panel">
+        <div class="toolbar">
+          <div class="search" style="width:min(320px,100%);display:block"><i class="fas fa-search"></i><input class="input" id="accSearch" placeholder="Search accounts…" autocomplete="off" style="padding-right:14px"></div>
+          <div class="chips" id="accChips">
+            <button class="fchip on" data-f="all">All <em id="aAll">0</em></button>
+            <button class="fchip" data-f="registered">Registered <em id="aReg">0</em></button>
+            <button class="fchip" data-f="admin-created">Admin-created <em id="aAdm">0</em></button>
+            <button class="fchip" data-f="banned">Banned <em id="aBan">0</em></button>
+          </div>
+        </div>
+        <div class="tbl-wrap">
+          <table style="min-width:820px">
+            <thead><tr><th>Account</th><th>Type</th><th>Servers</th><th>Free used</th><th>Created</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody id="accBody"><tr class="empty-row"><td colspan="7"><i class="fas fa-users"></i>Loading…</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- SITES -->
+    <section class="blk" id="sites">
+      <div class="blk-h"><div><h3>Live website links</h3><p>Cloudflare links created by users for their static websites</p></div><span class="badge b-acc" id="siteCount">0 live</span></div>
+      <div class="panel">
+        <div class="tbl-wrap">
+          <table style="min-width:760px">
+            <thead><tr><th>Server</th><th>Owner</th><th>State</th><th>Link</th><th>Live for</th><th>Actions</th></tr></thead>
+            <tbody id="siteBody"><tr class="empty-row"><td colspan="6"><i class="fas fa-globe"></i>No live links right now.</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ACTIVITY -->
+    <section class="blk" id="activity">
+      <div class="blk-h"><div><h3>Activity log</h3><p>Sign-ups, new servers, admin actions and system events</p></div>
+        <div class="chips" id="actChips">
+          <button class="fchip on" data-f="all">All</button><button class="fchip" data-f="register">Sign-ups</button><button class="fchip" data-f="server">Servers</button><button class="fchip" data-f="admin">Admin</button><button class="fchip" data-f="site">Links</button><button class="fchip" data-f="runtime">Runtime</button>
+        </div></div>
+      <div class="panel"><div class="tl" id="actList"><div class="empty-s"><i class="fas fa-clock-rotate-left"></i>Loading…</div></div></div>
+    </section>
+
+    <!-- RUNTIME -->
+    <section class="blk" id="runtime">
+      <div class="blk-h"><div><h3>Runtimes</h3><p>Tools your users' servers need. Missing ones can be installed here with one click.</p></div></div>
+      <div class="rt-grid" id="rtGrid"></div>
+    </section>
+
+    <!-- SETTINGS -->
+    <section class="blk" id="settings">
+      <div class="blk-h"><div><h3>Settings</h3><p>Site-wide controls</p></div><button class="btn btn-primary" id="saveSettings"><i class="fas fa-save"></i> Save settings</button></div>
+      <div class="set-grid">
+        <div class="panel pad">
+          <div class="panel-h"><h4>Access</h4></div>
+          <div class="set-row"><div><b>Open registration</b><small>Let new users create accounts and claim the free server</small></div><label class="sw"><input type="checkbox" id="setReg"><i></i></label></div>
+          <div class="set-row"><div><b>Maintenance mode</b><small>Shows a maintenance page to users. Admin stays available</small></div><label class="sw"><input type="checkbox" id="setMaint"><i></i></label></div>
+          <div class="set-row"><div><b>Max live website links</b><small>Limits concurrent Cloudflare links</small></div><input type="number" class="input" id="setTun" min="1" max="500" style="width:100px"></div>
+        </div>
+        <div class="panel pad">
+          <div class="panel-h"><h4>Announcement banner</h4><small>Shown on user pages</small></div>
+          <div class="set-row"><div><b>Show banner</b></div><label class="sw"><input type="checkbox" id="annOn"><i></i></label></div>
+          <label class="field" style="margin-top:6px"><span>Style</span><select class="input" id="annType"><option value="info">Info</option><option value="success">Success</option><option value="warning">Warning</option><option value="danger">Alert</option></select></label>
+          <label class="field" style="margin-top:12px"><span>Message</span><textarea class="input dr-note" id="annText" maxlength="300" placeholder="e.g. Maintenance tonight at 9 PM"></textarea></label>
+        </div>
+        <div class="panel pad">
+          <div class="panel-h"><h4>Free test server</h4><small>Given to every new account</small></div>
+          <div class="f2">
+            <label class="field"><span>Days</span><input type="number" class="input" id="trDays" min="1" max="365"></label>
+            <label class="field"><span>CPU limit %</span><input type="number" class="input" id="trCpu" min="5" max="100"></label>
+            <label class="field"><span>RAM</span><select class="input" id="trRam"><option>128MB</option><option>256MB</option><option>512MB</option><option>1GB</option><option>2GB</option></select></label>
+            <label class="field"><span>Storage</span><select class="input" id="trDisk"><option>512MB</option><option>1GB</option><option>2GB</option><option>5GB</option></select></label>
+          </div>
+          <label class="field" style="margin-top:12px"><span>Free servers per account</span><input type="number" class="input" id="trPer" min="0" max="20"></label>
+        </div>
+        <div class="panel pad">
+          <div class="panel-h"><h4>Security and backup</h4></div>
+          <div class="f2">
+            <label class="field"><span>Current password</span><input type="password" class="input" id="pwCur" autocomplete="current-password"></label>
+            <label class="field"><span>New password (8+)</span><input type="password" class="input" id="pwNew" autocomplete="new-password"></label>
+          </div>
+          <div class="btn-grid" style="margin-top:14px">
+            <button class="btn btn-warn" id="changePw"><i class="fas fa-key"></i> Change admin password</button>
+            <a class="btn btn-ghost" href="/admin/backup"><i class="fas fa-download"></i> Download backup</a>
+          </div>
+          <p class="note" style="margin-top:12px"><i class="fas fa-circle-info"></i> The backup zip contains users.json with all passwords. Keep it private.</p>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</main>
+</div>
+
+
+<!-- server manager drawer -->
+<div class="drawer-bg hidden" id="drBg"></div>
+<aside class="drawer hidden" id="drawer" aria-label="Manage server">
+  <div class="dr-h">
+    <div class="avatar" id="drAv" style="width:42px;height:42px;border-radius:13px;font-size:16px">?</div>
+    <div class="t"><b id="drTitle">Server</b><small id="drSub"></small></div>
+    <span id="drState"></span>
+    <button class="btn btn-ghost btn-icon" id="drClose" aria-label="Close"><i class="fas fa-times"></i></button>
+  </div>
+  <div class="dr-tabs" id="drTabs"><button data-t="info" class="on">Details</button><button data-t="control">Control</button><button data-t="manage">Manage</button><button data-t="logs">Logs</button></div>
+  <div class="dr-b" id="drBody"></div>
+</aside>
+
+<!-- command palette -->
+<div id="pal"><div class="pal-box">
+  <div class="pal-in"><i class="fas fa-terminal"></i><input id="palIn" placeholder="Type a command or search…" autocomplete="off"></div>
+  <div class="pal-list" id="palList"></div>
+  <div class="pal-foot"><span><kbd>↑</kbd> <kbd>↓</kbd> navigate</span><span><kbd>Enter</kbd> run</span><span><kbd>Esc</kbd> close</span></div>
+</div></div>
+
+<script>
+/* ===================== helpers ===================== */
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const MASK='••••••••';
+const Toast=Swal.mixin({toast:true,position:'bottom-end',showConfirmButton:false,timer:2600,timerProgressBar:true});
+function toast(icon,title){Toast.fire({icon,title})}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function copy(text,msg){
+  const done=()=>toast('success',msg||'Copied');
+  if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(text).then(done,fallback)}else fallback();
+  function fallback(){const t=document.createElement('textarea');t.value=text;t.style.cssText='position:fixed;opacity:0';document.body.appendChild(t);t.select();try{document.execCommand('copy');done()}catch(e){toast('error','Copy failed')}t.remove()}
+}
+function toMB(s){const m=String(s).match(/([\d.]+)\s*(MB|GB|TB)/i);if(!m)return 0;const n=parseFloat(m[1]),u=m[2].toUpperCase();return u==='GB'?n*1024:u==='TB'?n*1048576:n}
+function fmtMB(mb){return mb>=1024?(mb/1024).toFixed(mb%1024?1:0)+' GB':Math.round(mb)+' MB'}
+function daysLeft(d){if(!d)return null;const t=new Date(d+'T23:59:59');return Math.ceil((t-new Date())/86400000)}
+function cpuColor(v){return v<=30?'#34d399':v<=60?'#fbbf24':v<=80?'#f97316':'#f87171'}
+function countUp(el,to){
+  const from=parseInt(el.textContent)||0; if(from===to){el.textContent=to;return}
+  if(matchMedia('(prefers-reduced-motion:reduce)').matches){el.textContent=to;return}
+  const t0=performance.now(),dur=800;(function f(t){const p=Math.min((t-t0)/dur,1);el.textContent=Math.round(from+(to-from)*(1-Math.pow(1-p,3)));if(p<1)requestAnimationFrame(f)})(t0);
+}
+const rows=()=>$$('#serversBody tr.srow');
+
+/* ===================== create form ===================== */
+function setQuickCPU(value){$('#cpuLimit').value=value;$('#cpuLimitValue').innerText=value+'%';updatePreview()}
+function generatePassword(){
+  const chars='ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789';
+  const a=new Uint32Array(12);crypto.getRandomValues(a);let p='';for(let i=0;i<12;i++)p+=chars[a[i]%chars.length];return p;
+}
+function quickTemplate(type){
+  $('#serverType').value='python';
+  const rand=Math.random().toString(36).substr(2,4);
+  const T={discord:['discord_bot_','256MB',50],telegram:['telegram_bot_','128MB',30],flask:['flask_app_','512MB',80],node:['node_app_','256MB',60]}[type];
+  if(type==='node')$('#serverType').value='node';
+  $('#newUsername').value=T[0]+rand;$('#ram').value=T[1];setQuickCPU(T[2]);
+  $('#newPassword').value=generatePassword();updatePreview();
+  toast('info','Template applied');
+}
+function strengthScore(p){let s=0;if(p.length>=8)s++;if(p.length>=12)s++;if(/[a-z]/.test(p)&&/[A-Z]/.test(p))s++;if(/\d/.test(p)&&/[^A-Za-z0-9]|[A-Z]/.test(p))s++;return p?Math.max(1,s):0}
+function updatePreview(){
+  const u=$('#newUsername').value.trim(), p=$('#newPassword').value, days=parseInt($('#expiryDays').value)||0;
+  const typeSel=$('#serverType'), tLabel=typeSel.options[typeSel.selectedIndex].text.replace(/^[^\w]+/,'');
+  $('#pvAv').textContent=u?u[0].toUpperCase():'?';
+  $('#pvUser').textContent=u||'New user';
+  $('#pvType').textContent=tLabel;
+  $('#pvRes').textContent=$('#ram').value+' RAM / '+$('#disk').value+' disk';
+  $('#pvCpu').textContent=$('#cpuLimit').value+'%';
+  $('#pvDays').textContent=days?days+' day'+(days>1?'s':''):'-';
+  if(days>0){const d=new Date(Date.now()+days*86400000);$('#pvExp').textContent=d.toLocaleDateString('en-US',{year:'numeric',month:'short',day:'numeric'})}else $('#pvExp').textContent='-';
+  const sc=strengthScore(p),cols=['#f87171','#fb923c','#fbbf24','#34d399'];
+  $$('#strength i').forEach((el,i)=>el.style.background=i<sc?cols[sc-1]:'');
+  const note=$('#userNote');
+  if(u&&rows().some(r=>r.dataset.user===u)){note.style.display='flex';note.innerHTML='<i class="fas fa-circle-info"></i> This user already exists. The new server will be added to the same account and its current password stays unchanged.'}
+  else note.style.display='none';
+  $('#cpuLimitValue').innerText=$('#cpuLimit').value+'%';
+}
+['newUsername','newPassword','serverType','ram','disk','expiryDays','cpuLimit'].forEach(id=>$('#'+id).addEventListener('input',updatePreview));
+$('#pwGen').onclick=()=>{$('#newPassword').value=generatePassword();updatePreview()};
+$('#pwCopy').onclick=()=>{const v=$('#newPassword').value;v?copy(v,'Password copied'):toast('warning','Nothing to copy')};
+$$('.pre[data-days]').forEach(b=>b.onclick=()=>{$('#expiryDays').value=b.dataset.days;updatePreview()});
+$('#resetForm').onclick=()=>{$('#newUsername').value='';$('#newPassword').value='';$('#serverType').value='python';$('#ram').value='512MB';$('#disk').value='1GB';$('#expiryDays').value=30;setQuickCPU(80)};
+
+function createServer(){
+  const data={
+    username:$('#newUsername').value.trim(), password:$('#newPassword').value.trim(),
+    server_type:$('#serverType').value, ram:$('#ram').value, disk:$('#disk').value,
+    expiry_days:parseInt($('#expiryDays').value)||30, cpu_limit:parseInt($('#cpuLimit').value)||80
+  };
+  if(!data.username||!data.password){Swal.fire({title:'Missing details',text:'Username and password are required!',icon:'error'});return}
+  if(data.cpu_limit<10||data.cpu_limit>100){Swal.fire({title:'Invalid CPU limit',text:'CPU limit must be between 10% and 100%!',icon:'error'});return}
+  const existed=rows().some(r=>r.dataset.user===data.username);
+  Swal.fire({title:'Creating server…',html:'Please wait…',allowOutsideClick:false,didOpen:()=>Swal.showLoading()});
+  fetch('/admin/create_server',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)})
+  .then(r=>r.json()).then(res=>{
+    if(!res.success){Swal.fire({title:'Error',text:res.error||'Something went wrong',icon:'error'});return}
+    const loginFull=location.origin+res.login_url;
+    const all=`Login: ${loginFull}\nUsername: ${res.username}\nPassword: ${existed?'(unchanged, existing account)':res.password}`;
+    Swal.fire({
+      title:'Server created',icon:'success',confirmButtonText:'Done',showDenyButton:true,denyButtonText:'<i class="fas fa-copy"></i> Copy details',denyButtonColor:'#27314a',
+      html:`<div class="cred">
+        <div><small>Username</small><code>${esc(res.username)}</code></div>
+        <div><small>Password</small><code>${esc(existed?'(existing account password)':res.password)}</code></div>
+        <div><small>CPU limit</small><code>${data.cpu_limit}%</code></div>
+        <div><small>Login URL</small><code><a href="${esc(res.login_url)}" target="_blank" style="color:var(--acc2)">${esc(loginFull)}</a></code></div>
+        <div><small>Host</small><code>${esc(res.hostname)}</code></div></div>`,
+      preConfirm:()=>true,
+      preDeny:()=>{copy(all,'Login details copied');return false}
+    }).then(()=>softRefresh(false));
+    $('#resetForm').click();
+    softRefresh(false);
+  }).catch(()=>Swal.fire({title:'Error',text:'Could not connect to server',icon:'error'}));
+}
+
+/* ===================== row actions ===================== */
+function togglePassword(row){
+  const el=row.querySelector('.pv'),btn=row.querySelector('[data-act=eye] i');
+  const hidden=el.textContent===MASK;
+  el.textContent=hidden?(row.dataset.srvpass||row.dataset.pass||'(account password)'):MASK;btn.className='fas fa-eye'+(hidden?'-slash':'');
+}
+function changeCPULimit(serverId,currentLimit){
+  return Swal.fire({
+    title:'Change CPU rate limit',html:`<div style="color:var(--tx3);font-size:13px">Current limit: ${currentLimit}%</div><div class="big-cpu" id="bigCpu">${currentLimit}%</div>`,
+    input:'range',inputAttributes:{min:'10',max:'100',step:'5'},inputValue:currentLimit,showCancelButton:true,confirmButtonText:'Save',
+    didOpen:()=>{const r=Swal.getInput();r.addEventListener('input',()=>$('#bigCpu').textContent=r.value+'%')}
+  }).then(result=>{
+    if(!result.isConfirmed) return;
+    const n=parseInt(result.value);
+    return fetch(`/admin/set_rate_limit/${serverId}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({cpu_limit:n})})
+      .then(r=>r.json()).then(d=>{if(d.success){toast('success','CPU limit set to '+n+'%');softRefresh(false)}else Swal.fire('Error',d.error,'error')});
+  });
+}
+function deleteServer(username,serverId){
+  Swal.fire({
+    title:'Delete server?',icon:'warning',showCancelButton:true,confirmButtonText:'Yes, delete it',
+    html:`<div class="cred"><div><small>User</small><code>${esc(username)}</code></div><div><small>Server ID</small><code>${esc(serverId)}</code></div></div><p style="color:var(--warn);font-size:12.5px;margin-top:14px">This will delete all files and cannot be undone.</p>`
+  }).then(r=>{
+    if(!r.isConfirmed) return;
+    fetch(`/admin/delete_server/${encodeURIComponent(username)}/${serverId}`,{method:'POST'}).then(()=>{toast('success','Server deleted');softRefresh(false)});
+  });
+}
+$('#serversBody').addEventListener('click',e=>{
+  const btn=e.target.closest('[data-act]'); if(!btn) return;
+  const row=btn.closest('tr'), d=row.dataset, act=btn.dataset.act;
+  if(act==='eye') togglePassword(row);
+  else if(act==='copypw') copy(d.srvpass||d.pass||'','Password copied');
+  else if(act==='copylink') copy(location.origin+d.login,'Login link copied');
+  else if(act==='copycred') copy(`Login: ${location.origin}${d.login}\nUsername: ${d.srvuser||d.user}\nPassword: ${d.srvpass||d.pass||'(account password)'}`,'Login details copied');
+  else if(act==='cpu') changeCPULimit(d.id,parseInt(d.cpu));
+  else if(act==='del') deleteServer(d.user,d.id);
+  else if(act==='manage') openDrawer(d.id);
+});
+$('#serversBody').addEventListener('change',e=>{if(e.target.classList.contains('rowck')){e.target.closest('tr').classList.toggle('sel',e.target.checked);updateBulk()}});
+
+/* ===================== filter / sort / search ===================== */
+let filter='all', sortKey=null, sortDir=1, query='';
+function statusOf(r){const d=daysLeft(r.dataset.expiry);return {st:r.dataset.status,d}}
+function matches(r){
+  const {st,d}=statusOf(r), D=r.dataset;
+  if(filter==='running'&&st!=='running')return false;
+  if(filter==='stopped'&&st!=='stopped')return false;
+  if(filter==='limited'&&st!=='limited')return false;
+  if(filter==='suspended'&&st!=='suspended')return false;
+  if(filter==='soon'&&!(d!==null&&d>=0&&d<=3))return false;
+  if(filter==='expired'&&!(d!==null&&d<0))return false;
+  const tf=$('#typeFilter').value; if(tf&&D.type!==tf)return false;
+  if(query){const q=query.toLowerCase();if(!(D.user.toLowerCase().includes(q)||D.id.toLowerCase().includes(q)||D.type.toLowerCase().includes(q)||(D.srvuser||'').toLowerCase().includes(q)))return false}
+  return true;
+}
+function applyView(){
+  const tb=$('#serversBody'), rs=rows();
+  if(sortKey){
+    const val=r=>{const D=r.dataset;return sortKey==='cpu'?+D.cpu:sortKey==='expiry'?(D.expiry||'9999'):sortKey==='user'?D.user.toLowerCase():sortKey==='type'?D.type:D.status};
+    rs.sort((a,b)=>{const x=val(a),y=val(b);return (x>y?1:x<y?-1:0)*sortDir}).forEach(r=>tb.insertBefore(r,$('#emptyRow')));
+  }
+  let shown=0;rs.forEach(r=>{const ok=matches(r);r.classList.toggle('hide',!ok);if(ok)shown++});
+  $('#showing').textContent=`Showing ${shown} of ${rs.length}`;
+  const em=$('#emptyRow');em.style.display=shown===0?'':'none';
+  $('#emptyMsg').textContent=rs.length===0?'No users found. Create your first server!':'No servers match your filters.';
+  $$('thead th.sortable').forEach(th=>{const on=th.dataset.s===sortKey;th.classList.toggle('sorted',on);th.querySelector('.ar').className='ar fas fa-'+(on?(sortDir>0?'sort-up':'sort-down'):'sort')});
+  updateBulk();
+}
+$('#chips').addEventListener('click',e=>{const b=e.target.closest('.fchip');if(!b)return;filter=b.dataset.f;$$('.fchip').forEach(x=>x.classList.toggle('on',x===b));applyView()});
+$('#typeFilter').addEventListener('change',applyView);
+$$('thead th.sortable').forEach(th=>th.onclick=()=>{if(sortKey===th.dataset.s)sortDir*=-1;else{sortKey=th.dataset.s;sortDir=1}applyView()});
+$('#globalSearch').addEventListener('input',e=>{query=e.target.value.trim();applyView()});
+$('#densBtn').onclick=()=>{document.body.classList.toggle('compact');try{localStorage.setItem('adm_compact',document.body.classList.contains('compact')?'1':'')}catch(e){}};
+try{if(localStorage.getItem('adm_compact'))document.body.classList.add('compact')}catch(e){}
+
+/* ===================== bulk ===================== */
+const selected=()=>rows().filter(r=>r.querySelector('.rowck').checked);
+function updateBulk(){
+  const s=selected(),vis=rows().filter(r=>!r.classList.contains('hide'));
+  $('#bulk').classList.toggle('show',s.length>0);$('#bulkN').textContent=s.length;
+  $('#ckAll').checked=vis.length>0&&vis.every(r=>r.querySelector('.rowck').checked);
+}
+$('#ckAll').onchange=e=>{rows().filter(r=>!r.classList.contains('hide')).forEach(r=>{r.querySelector('.rowck').checked=e.target.checked;r.classList.toggle('sel',e.target.checked)});updateBulk()};
+$('#bulkClear').onclick=()=>{$$('.rowck').forEach(c=>{c.checked=false;c.closest('tr').classList.remove('sel')});updateBulk()};
+$('#bulkDel').onclick=()=>{
+  const s=selected();if(!s.length)return;
+  Swal.fire({title:`Delete ${s.length} server${s.length>1?'s':''}?`,icon:'warning',showCancelButton:true,confirmButtonText:'Yes, delete',text:'All files will be removed. This cannot be undone.'}).then(async r=>{
+    if(!r.isConfirmed)return;
+    Swal.fire({title:'Deleting…',allowOutsideClick:false,didOpen:()=>Swal.showLoading()});
+    for(const row of s){try{await fetch(`/admin/delete_server/${encodeURIComponent(row.dataset.user)}/${row.dataset.id}`,{method:'POST'})}catch(e){}}
+    Swal.close();toast('success',`${s.length} server${s.length>1?'s':''} deleted`);softRefresh(false);
+  });
+};
+$('#bulkCpu').onclick=()=>{
+  const s=selected();if(!s.length)return;
+  Swal.fire({title:`Set CPU limit for ${s.length} server${s.length>1?'s':''}`,html:'<div class="big-cpu" id="bigCpu">50%</div>',input:'range',inputAttributes:{min:'10',max:'100',step:'5'},inputValue:50,showCancelButton:true,confirmButtonText:'Apply',
+    didOpen:()=>{const r=Swal.getInput();r.addEventListener('input',()=>$('#bigCpu').textContent=r.value+'%')}
+  }).then(async r=>{
+    if(!r.isConfirmed)return;const n=parseInt(r.value);
+    for(const row of s){try{await fetch(`/admin/set_rate_limit/${row.dataset.id}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({cpu_limit:n})})}catch(e){}}
+    toast('success',`CPU limit set to ${n}%`);softRefresh(false);
+  });
+};
+
+/* ===================== export ===================== */
+$('#csvBtn').onclick=()=>{
+  const rs=rows().filter(r=>!r.classList.contains('hide'));
+  if(!rs.length){toast('warning','Nothing to export');return}
+  const head=['username','server_id','type','ram','disk','cpu_limit','status','expiry','login_url'];
+  const q=v=>'"'+String(v).replace(/"/g,'""')+'"';
+  const lines=[head.join(',')].concat(rs.map(r=>{const d=r.dataset;return [d.user,d.id,d.type,d.ram,d.disk,d.cpu,d.status,d.expiry,location.origin+d.login].map(q).join(',')}));
+  const blob=new Blob([lines.join('\n')],{type:'text/csv'}),a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);a.download='servers-'+new Date().toISOString().slice(0,10)+'.csv';a.click();URL.revokeObjectURL(a.href);
+  toast('success','Exported without passwords');
+};
+
+/* ===================== derived UI: row decorations + insights ===================== */
+function decorate(){
+  rows().forEach(r=>{
+    const c=+r.dataset.cpu,bar=r.querySelector('.cpubar');bar.style.width=c+'%';bar.style.background=cpuColor(c);r.querySelector('.cputx').style.color=cpuColor(c);
+    const d=daysLeft(r.dataset.expiry),b=r.querySelector('.expbadge');
+    if(d===null){b.style.display='none';return}
+    b.style.display='inline-flex';
+    if(d<0){b.className='badge b-bad expbadge';b.textContent='Expired '+(-d)+'d ago'}
+    else if(d===0){b.className='badge b-bad expbadge';b.textContent='Expires today'}
+    else if(d<=3){b.className='badge b-warn expbadge';b.textContent='In '+d+' day'+(d>1?'s':'')}
+    else{b.className='badge b-mute expbadge';b.textContent='In '+d+' days'}
+  });
+}
+function insights(){
+  const rs=rows(), N=rs.length;
+  const users=new Set(rs.map(r=>r.dataset.user)).size;
+  const run=rs.filter(r=>r.dataset.status==='running').length, lim=rs.filter(r=>r.dataset.status==='limited').length, susp=rs.filter(r=>r.dataset.status==='suspended').length, stop=N-run-lim-susp;
+  countUp($('#totalUsers'),users);countUp($('#totalServers'),N);countUp($('#totalRunning'),run);countUp($('#totalStopped'),N-run);
+  $('#navCount').textContent=N;
+  $('#kpiRunSub').textContent=N?Math.round(run/N*100)+'% of all servers':'Online right now';
+  $('#kpiStopSub').textContent=lim?`${lim} rate limited`:'Offline servers';
+  $('#kpiUsersSub').textContent=users?(N/users).toFixed(1)+' servers per user':'Registered accounts';
+  const pct=(n,t)=>t?Math.max(4,n/t*100)+'%':'0%';
+  requestAnimationFrame(()=>{$('#kbUsers').style.width=users?'100%':'0';$('#kbServers').style.width=N?'100%':'0';$('#kbRun').style.width=N?(run/N*100)+'%':'0';$('#kbStop').style.width=N?((N-run)/N*100)+'%':'0'});
+
+  /* donut */
+  const parts=[['Running',run,'#34d399'],['Stopped',stop,'#f87171'],['Rate limited',lim,'#fbbf24'],['Suspended',susp,'#fb923c']];
+  const C=2*Math.PI*46;let off=0,arcs='';
+  parts.forEach(([n,v,c])=>{if(!v||!N)return;const len=v/N*C;arcs+=`<circle cx="60" cy="60" r="46" stroke="${c}" stroke-dasharray="${Math.max(len-3,0.1)} ${C}" stroke-dashoffset="${-off}" stroke-linecap="butt"/>`;off+=len});
+  $('#donutArcs').innerHTML=arcs;$('#donutTotal').textContent=N;
+  $('#donutLegend').innerHTML=parts.map(([n,v,c])=>`<div><i style="background:${c}"></i>${n}<b>${v}</b></div>`).join('');
+
+  /* types */
+  const types={};rs.forEach(r=>types[r.dataset.type]=(types[r.dataset.type]||0)+1);
+  const names={python:'Python bots',node:'Node.js apps',static:'Static sites'};
+  $('#typeBars').innerHTML=Object.keys(types).length?Object.entries(types).sort((a,b)=>b[1]-a[1]).map(([t,v])=>`<div class="hb"><div class="l"><span>${esc(names[t]||t)}</span><b>${v}</b></div><div class="t"><i data-w="${N?v/N*100:0}"></i></div></div>`).join(''):'<div class="empty-s" style="padding:14px"><span>No servers yet</span></div>';
+  requestAnimationFrame(()=>$$('#typeBars .t i').forEach(i=>i.style.width=i.dataset.w+'%'));
+  $('#sumRam').textContent=fmtMB(rs.reduce((a,r)=>a+toMB(r.dataset.ram),0));
+  $('#sumDisk').textContent=fmtMB(rs.reduce((a,r)=>a+toMB(r.dataset.disk),0));
+  $('#avgCpu').textContent=N?Math.round(rs.reduce((a,r)=>a+(+r.dataset.cpu),0)/N)+'%':'0%';
+  const cnt={};rs.forEach(r=>cnt[r.dataset.user]=(cnt[r.dataset.user]||0)+1);
+  const top=Object.entries(cnt).sort((a,b)=>b[1]-a[1])[0];$('#topUser').textContent=top?top[0]:'-';
+
+  /* attention list */
+  const att=[];
+  rs.forEach(r=>{const d=daysLeft(r.dataset.expiry);
+    if(r.dataset.status==='limited')att.push({r,t:'limited',k:-1000});
+    if(d!==null&&d<0)att.push({r,t:'expired',d,k:d-500});
+    else if(d!==null&&d<=7)att.push({r,t:'soon',d,k:d})});
+  att.sort((a,b)=>a.k-b.k);
+  $('#soonList').innerHTML=att.length?att.slice(0,12).map(a=>{
+    const lbl=a.t==='limited'?'<span class="badge b-warn">Rate limited</span>':a.t==='expired'?'<span class="badge b-bad">Expired</span>':`<span class="badge b-warn">${a.d===0?'Today':'In '+a.d+'d'}</span>`;
+    return `<div class="it" data-id="${esc(a.r.dataset.id)}"><i class="fas fa-${a.t==='limited'?'gauge-high':'hourglass-half'}" style="color:var(--warn)"></i><b>${esc(a.r.dataset.user)}</b>${lbl}</div>`}).join('')
+    :'<div class="empty-s"><i class="fas fa-circle-check"></i>All servers look healthy.</div>';
+  $('#cAll').textContent=N;$('#cRun').textContent=run;$('#cStop').textContent=stop;$('#cLim').textContent=lim;$('#cSusp').textContent=susp;
+  $('#cSoon').textContent=rs.filter(r=>{const d=daysLeft(r.dataset.expiry);return d!==null&&d>=0&&d<=3}).length;
+  $('#cExp').textContent=rs.filter(r=>{const d=daysLeft(r.dataset.expiry);return d!==null&&d<0}).length;
+}
+$('#soonList').addEventListener('click',e=>{
+  const it=e.target.closest('.it');if(!it)return;
+  const row=rows().find(r=>r.dataset.id===it.dataset.id);if(!row)return;
+  $('#servers').scrollIntoView({behavior:'smooth'});row.scrollIntoView({block:'center',behavior:'smooth'});
+  row.style.transition='background .3s';row.style.background='rgba(91,140,255,.22)';setTimeout(()=>row.style.background='',1600);
+});
+function refreshAll(){decorate();insights();applyView()}
+
+/* ===================== soft refresh + live ===================== */
+let lastUpdate=Date.now(),live=false,liveTimer=null;
+function softRefresh(manual){
+  const icon=$('#refreshBtn i');icon.classList.add('fa-spin');
+  return fetch('/admin',{credentials:'same-origin',headers:{'X-Requested-With':'fetch'}}).then(r=>r.text()).then(html=>{
+    const doc=new DOMParser().parseFromString(html,'text/html');
+    const nb=doc.getElementById('serversBody');
+    if(!nb){location.reload();return}
+    const keep=new Set(selected().map(r=>r.dataset.id));
+    const revealed=new Set(rows().filter(r=>r.querySelector('.pv').textContent!==MASK).map(r=>r.dataset.id));
+    $('#serversBody').innerHTML=nb.innerHTML;
+    rows().forEach(r=>{if(keep.has(r.dataset.id)){r.querySelector('.rowck').checked=true;r.classList.add('sel')}
+      if(revealed.has(r.dataset.id))togglePassword(r)});
+    lastUpdate=Date.now();refreshAll();
+    if(manual)toast('success','Data refreshed');
+  }).catch(()=>{if(manual)toast('error','Refresh failed')}).finally(()=>setTimeout(()=>icon.classList.remove('fa-spin'),400));
+}
+function refreshStats(){softRefresh(true)}
+$('#refreshBtn').onclick=()=>softRefresh(true);
+$('#liveChip').onclick=()=>{
+  live=!live;$('#liveChip').classList.toggle('on',live);
+  clearInterval(liveTimer);if(live){liveTimer=setInterval(()=>{if(!document.hidden&&!Swal.isVisible())softRefresh(false)},15000);toast('success','Live refresh on (15s)')}else toast('info','Live refresh off');
+  try{localStorage.setItem('adm_live',live?'1':'')}catch(e){}
+};
+setInterval(()=>{const s=Math.round((Date.now()-lastUpdate)/1000);$('#lastUp').textContent=s<5?'just now':s<60?s+'s ago':Math.floor(s/60)+'m ago'},5000);
+
+/* ===================== nav / scroll spy / mobile ===================== */
+const secs=['overview','create','servers'].map(id=>document.getElementById(id));
+const spy=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)$$('#sideNav a').forEach(a=>a.classList.toggle('active',a.getAttribute('href')==='#'+e.target.id))}),{rootMargin:'-35% 0px -55% 0px'});
+secs.forEach(s=>spy.observe(s));
+const closeMenu=()=>document.body.classList.remove('menu');
+$('#menuBtn').onclick=()=>document.body.classList.toggle('menu');$('#backdrop').onclick=closeMenu;
+$$('#sideNav a[href^="#"]').forEach(a=>a.addEventListener('click',closeMenu));
+
+/* ===================== command palette ===================== */
+const cmds=[
+  {i:'chart-pie',t:'Go to Overview',h:'G O',run:()=>$('#overview').scrollIntoView({behavior:'smooth'})},
+  {i:'circle-plus',t:'Go to Create Server',h:'Ctrl N',run:()=>{$('#create').scrollIntoView({behavior:'smooth'});setTimeout(()=>$('#newUsername').focus(),400)}},
+  {i:'server',t:'Go to Servers',run:()=>$('#servers').scrollIntoView({behavior:'smooth'})},
+  {i:'discord',t:'Template: Discord bot',run:()=>{quickTemplate('discord');$('#create').scrollIntoView({behavior:'smooth'})},ic:'fab'},
+  {i:'telegram-plane',t:'Template: Telegram bot',run:()=>{quickTemplate('telegram');$('#create').scrollIntoView({behavior:'smooth'})},ic:'fab'},
+  {i:'flask',t:'Template: Flask app',run:()=>{quickTemplate('flask');$('#create').scrollIntoView({behavior:'smooth'})}},
+  {i:'node-js',t:'Template: Node.js app',run:()=>{quickTemplate('node');$('#create').scrollIntoView({behavior:'smooth'})},ic:'fab'},
+  {i:'sync-alt',t:'Refresh data',h:'Ctrl R',run:()=>softRefresh(true)},
+  {i:'satellite-dish',t:'Toggle live refresh',run:()=>$('#liveChip').click()},
+  {i:'file-csv',t:'Export servers to CSV',run:()=>$('#csvBtn').click()},
+  {i:'play',t:'Filter: running servers',run:()=>{$('[data-f=running]').click();$('#servers').scrollIntoView({behavior:'smooth'})}},
+  {i:'hourglass-half',t:'Filter: expiring soon',run:()=>{$('[data-f=soon]').click();$('#servers').scrollIntoView({behavior:'smooth'})}},
+  {i:'arrow-up-right-from-square',t:'Open website',run:()=>window.open('/','_blank')},
+  {i:'sign-out-alt',t:'Logout',run:()=>location.href='/logout'}
+];
+let palIdx=0,palShown=cmds;
+function renderPal(){
+  $('#palList').innerHTML=palShown.length?palShown.map((c,i)=>`<div class="pal-it${i===palIdx?' on':''}" data-i="${i}"><i class="${c.ic||'fas'} fa-${c.i}"></i>${esc(c.t)}${c.h?`<small>${c.h}</small>`:''}</div>`).join(''):'<div class="empty-s">No matching command</div>';
+  const on=$('.pal-it.on');if(on)on.scrollIntoView({block:'nearest'});
+}
+function openPal(){$('#pal').classList.add('open');$('#palIn').value='';palShown=cmds;palIdx=0;renderPal();setTimeout(()=>$('#palIn').focus(),20)}
+function closePal(){$('#pal').classList.remove('open')}
+function runPal(i){const c=palShown[i];if(c){closePal();c.run()}}
+$('#palBtn').onclick=openPal;
+$('#pal').addEventListener('mousedown',e=>{if(e.target.id==='pal')closePal()});
+$('#palList').addEventListener('click',e=>{const it=e.target.closest('.pal-it');if(it)runPal(+it.dataset.i)});
+$('#palIn').addEventListener('input',e=>{
+  const q=e.target.value.toLowerCase().trim();
+  palShown=q?cmds.filter(c=>q.split(/\s+/).every(w=>c.t.toLowerCase().includes(w))):cmds;palIdx=0;renderPal();
+});
+$('#palIn').addEventListener('keydown',e=>{
+  if(e.key==='ArrowDown'){e.preventDefault();palIdx=Math.min(palIdx+1,palShown.length-1);renderPal()}
+  else if(e.key==='ArrowUp'){e.preventDefault();palIdx=Math.max(palIdx-1,0);renderPal()}
+  else if(e.key==='Enter'){e.preventDefault();runPal(palIdx)}
+});
+
+/* ===================== shortcuts ===================== */
+document.addEventListener('keydown',e=>{
+  const typing=/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName);
+  if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'){e.preventDefault();$('#pal').classList.contains('open')?closePal():openPal()}
+  else if(e.key==='Escape'){closePal();closeMenu()}
+  else if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='r'){e.preventDefault();softRefresh(true)}
+  else if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='n'){e.preventDefault();$('#create').scrollIntoView({behavior:'smooth'});setTimeout(()=>$('#newUsername').focus(),350)}
+  else if(e.key==='/'&&!typing){e.preventDefault();$('#globalSearch').focus()}
+});
+
+
+/* ===================== v3 admin tools ===================== */
+const api=(url,body)=>fetch(url,{method:body?'POST':'GET',headers:body?{'Content-Type':'application/json'}:{},body:body?JSON.stringify(body):undefined,credentials:'same-origin'}).then(async r=>{let d={};try{d=await r.json()}catch(e){}if(r.status===403&&d.error==='Unauthorized'){location.reload()}if(!r.ok)throw new Error(d.error||d.msg||('Error '+r.status));return d});
+const fmtB=b=>b>=1073741824?(b/1073741824).toFixed(1)+' GB':b>=1048576?(b/1048576).toFixed(1)+' MB':Math.max(0,Math.round(b/1024))+' KB';
+const fmtDur=s=>{s=Math.max(0,Math.floor(s));const d=Math.floor(s/86400),h=Math.floor(s%86400/3600),m=Math.floor(s%3600/60);return d?`${d}d ${h}h`:h?`${h}h ${m}m`:`${m}m`};
+const heat=p=>p>85?'#f87171':p>65?'#fbbf24':null;
+const visible={};
+['accounts','sites','activity','runtime','settings','overview'].forEach(id=>{const el=document.getElementById(id);if(!el)return;spy.observe(el);new IntersectionObserver(es=>es.forEach(e=>{visible[id]=e.isIntersecting;if(e.isIntersecting)onSectionShow(id)}),{rootMargin:'200px 0px'}).observe(el)});
+function onSectionShow(id){if(id==='accounts')loadAccounts();if(id==='activity')loadActivity();if(id==='runtime')loadRuntime()}
+
+/* ---- system monitor ---- */
+const mhist={cpu:[],ram:[]};let lastNet=null,ovData=null,settingsFilled=false;
+function setRing(id,pct,def){const c=$('#'+id);c.style.strokeDashoffset=264-264*Math.min(100,Math.max(0,pct))/100;c.style.stroke=heat(pct)||def}
+function sparkline(id,arr,color){const el=$('#'+id);if(!el||arr.length<2)return;const step=100/39,pts=arr.map((v,i)=>[(i+(40-arr.length))*step,28-(Math.min(100,v)/100)*26]),line=pts.map(p=>p[0].toFixed(1)+','+p[1].toFixed(1)).join(' ');el.innerHTML=`<polygon points="${pts[0][0]},30 ${line} ${pts[pts.length-1][0]},30" fill="${color}" opacity=".14"/><polyline points="${line}" fill="none" stroke="${color}" stroke-width="1.5" vector-effect="non-scaling-stroke"/>`}
+function renderMon(o){
+  const s=o.system;setRing('rgCpu',s.cpu,'#34d399');setRing('rgRam',s.ram_percent,'#b7a6ff');setRing('rgDisk',s.disk_percent,'#38d3f5');
+  $('#vCpu').textContent=Math.round(s.cpu)+'%';$('#vRam').textContent=Math.round(s.ram_percent)+'%';$('#vDisk').textContent=Math.round(s.disk_percent)+'%';
+  $('#vCores').textContent='('+s.cpu_count+' cores)';$('#vRamTxt').textContent=fmtB(s.ram_used)+' / '+fmtB(s.ram_total);$('#vDiskTxt').textContent=fmtB(s.disk_used)+' / '+fmtB(s.disk_total);
+  mhist.cpu.push(s.cpu);mhist.ram.push(s.ram_percent);if(mhist.cpu.length>40){mhist.cpu.shift();mhist.ram.shift()}
+  sparkline('spkCpu',mhist.cpu,'#34d399');sparkline('spkRam',mhist.ram,'#b7a6ff');
+  let rate='-';const now=Date.now();if(lastNet){const dt=(now-lastNet.t)/1000;if(dt>0)rate='↓ '+fmtB((s.net_recv-lastNet.r)/dt)+'/s  ↑ '+fmtB((s.net_sent-lastNet.s)/dt)+'/s'}lastNet={t:now,r:s.net_recv,s:s.net_sent};
+  const rows=[['Host',s.os],['Python',s.python],['Host uptime',fmtDur(s.uptime)],['App uptime',fmtDur(s.app_uptime)],['Processes',s.processes],['Load avg',s.load?s.load.map(x=>x.toFixed(2)).join(' '):'n/a'],['Network now',rate],['Network total','↓ '+fmtB(s.net_recv)+'  ↑ '+fmtB(s.net_sent)]];
+  $('#sysKv').innerHTML=rows.map(r=>`<div>${r[0]}<b title="${esc(r[1])}">${esc(r[1])}</b></div>`).join('');
+}
+function renderRtMini(rt){
+  const items=[['node','Node.js','fab fa-node-js','#34d399',rt.node],['cloudflared','Cloudflare tunnel','fas fa-cloud','#ff8f5a',rt.cloudflared]];
+  $('#rtMini').innerHTML=items.map(([k,n,ic,c,r])=>`<div class="rt-i"><span class="ic" style="background:${c}22;color:${c}"><i class="${ic}"></i></span><div style="min-width:0"><b>${n}</b><small>${r.installed?esc(r.version||''):'not installed'}</small></div>${r.installed?'<span class="badge b-ok">Ready</span>':(r.job&&r.job.state==='running'?'<span class="badge b-acc">Installing…</span>':'<span class="badge b-bad">Missing</span>')}</div>`).join('');
+}
+function pollOverview(){api('/admin/api/overview').then(o=>{ovData=o;renderMon(o);renderRtMini(o.runtime);renderSites(o.sites);$('#pwWarn').classList.toggle('hidden',!o.default_admin_password);if(!settingsFilled){fillSettings(o.settings);settingsFilled=true}}).catch(()=>{})}
+setInterval(()=>{if(!document.hidden)pollOverview()},5000);
+
+/* ---- live website links ---- */
+function renderSites(list){
+  const live=list.filter(x=>x.state==='live'||x.state==='starting');
+  $('#siteCount').textContent=live.length+' live';
+  $('#siteBody').innerHTML=list.length?list.map(x=>`<tr><td data-label="Server"><b class="mono" style="font-family:var(--mono)">${esc(x.server_id)}</b></td><td data-label="Owner">${esc(x.owner)}</td><td data-label="State"><span class="badge ${x.state==='live'?'b-ok':x.state==='starting'?'b-acc':'b-bad'}">${esc(x.state)}</span></td><td data-label="Link">${x.url?`<a class="link" href="${esc(x.url)}" target="_blank" rel="noopener">${esc(x.url.replace('https://',''))}</a>`:'-'}</td><td data-label="Live for">${x.live_since?fmtDur(Date.now()/1000-x.live_since):'-'}</td><td data-label="Actions"><div class="acts">${x.url?`<button class="btn btn-ghost" data-copy="${esc(x.url)}" title="Copy link"><i class="far fa-copy"></i></button>`:''}<button class="btn btn-bad" data-stop="${esc(x.server_id)}" title="Stop link"><i class="fas fa-power-off"></i></button></div></td></tr>`).join(''):'<tr class="empty-row"><td colspan="6"><i class="fas fa-globe"></i>No live links right now.</td></tr>';
+}
+$('#siteBody').addEventListener('click',e=>{const c=e.target.closest('[data-copy]');if(c){copy(c.dataset.copy,'Link copied');return}const s=e.target.closest('[data-stop]');if(s)api(`/admin/api/tunnel/${s.dataset.stop}/stop`,{}).then(()=>{toast('success','Link stopped');pollOverview()}).catch(er=>toast('error',er.message))});
+
+/* ---- accounts ---- */
+let accounts=[],accFilter='all',accQ='';
+function loadAccounts(){api('/admin/api/accounts').then(d=>{accounts=d.accounts;renderAccounts()}).catch(()=>{})}
+function renderAccounts(){
+  $('#aAll').textContent=accounts.length;$('#aReg').textContent=accounts.filter(a=>a.kind==='registered').length;$('#aAdm').textContent=accounts.filter(a=>a.kind==='admin-created').length;$('#aBan').textContent=accounts.filter(a=>a.banned).length;
+  const q=accQ.toLowerCase(),list=accounts.filter(a=>(accFilter==='all'||(accFilter==='banned'?a.banned:a.kind===accFilter))&&(!q||a.username.toLowerCase().includes(q)));
+  $('#accBody').innerHTML=list.length?list.map(a=>`<tr data-u="${esc(a.username)}"><td data-label="Account"><div class="u"><div class="avatar">${esc(a.username[0].toUpperCase())}</div><div><b>${esc(a.username)}</b></div></div></td><td data-label="Type"><span class="badge ${a.kind==='registered'?'b-acc':'b-mute'}">${a.kind}</span></td><td data-label="Servers">${a.servers} <small style="color:var(--tx3)">(${a.running} running)</small></td><td data-label="Free used">${a.kind==='registered'?a.free_claimed:'-'}</td><td data-label="Created"><small style="font-family:var(--mono);color:var(--tx3)">${esc((a.created||'').slice(0,10)||'-')}</small></td><td data-label="Status">${a.banned?'<span class="badge b-bad"><i class="fas fa-ban"></i> Banned</span>':'<span class="badge b-ok">Active</span>'}</td><td data-label="Actions"><div class="acts"><button class="btn btn-ghost" data-a="reset_password" title="Reset password"><i class="fas fa-key"></i></button>${a.kind==='registered'?'<button class="btn btn-ghost" data-a="grant_free" title="Allow one more free server"><i class="fas fa-gift"></i></button>':''}<button class="btn btn-warn" data-a="${a.banned?'unban':'ban'}" title="${a.banned?'Unban':'Ban'}"><i class="fas fa-${a.banned?'user-check':'user-slash'}"></i></button><button class="btn btn-bad" data-a="delete" title="Delete account and servers"><i class="fas fa-trash"></i></button></div></td></tr>`).join(''):'<tr class="empty-row"><td colspan="7"><i class="fas fa-users"></i>No accounts match.</td></tr>';
+}
+$('#accSearch').addEventListener('input',e=>{accQ=e.target.value.trim();renderAccounts()});
+$('#accChips').addEventListener('click',e=>{const b=e.target.closest('.fchip');if(!b)return;accFilter=b.dataset.f;$$('#accChips .fchip').forEach(x=>x.classList.toggle('on',x===b));renderAccounts()});
+$('#accBody').addEventListener('click',async e=>{
+  const b=e.target.closest('[data-a]');if(!b)return;const u=b.closest('tr').dataset.u,a=b.dataset.a;
+  const run=()=>api('/admin/api/account/'+encodeURIComponent(u),{action:a});
+  try{
+    if(a==='delete'){const r=await Swal.fire({title:'Delete account?',html:`<b>${esc(u)}</b> and all of their servers and files will be removed. This cannot be undone.`,icon:'warning',showCancelButton:true,confirmButtonText:'Yes, delete'});if(!r.isConfirmed)return;await run();toast('success','Account deleted');softRefresh(false)}
+    else if(a==='reset_password'){const r=await Swal.fire({title:'Reset password?',html:`A new random password will be created for <b>${esc(u)}</b>.`,icon:'question',showCancelButton:true,confirmButtonText:'Reset'});if(!r.isConfirmed)return;const d=await run();Swal.fire({title:'New password',icon:'success',html:`<div class="cred"><div><small>Username</small><code>${esc(u)}</code></div><div><small>Password</small><code>${esc(d.password)}</code><button data-copy="${esc(d.password)}" onclick="copy('${esc(d.password)}','Password copied')"><i class="far fa-copy"></i></button></div></div>`})}
+    else if(a==='ban'){const r=await Swal.fire({title:'Ban account?',html:`<b>${esc(u)}</b> will be signed out, their servers stopped and links closed.`,icon:'warning',showCancelButton:true,confirmButtonText:'Ban'});if(!r.isConfirmed)return;await run();toast('success','Account banned')}
+    else{await run();toast('success',a==='grant_free'?'One more free server allowed':'Done')}
+    loadAccounts();softRefresh(false);
+  }catch(er){toast('error',er.message)}
+});
+
+/* ---- activity ---- */
+let actItems=[],actFilter='all';
+const ACT={register:['user-plus','#34d399'],server:['server','#5b8cff'],admin:['user-shield','#fbbf24'],site:['globe','#38d3f5'],runtime:['screwdriver-wrench','#b7a6ff'],settings:['sliders','#98a2bd'],backup:['box-archive','#ff8f5a']};
+function loadActivity(){api('/admin/api/activity?limit=200').then(d=>{actItems=d.items;renderActivity()}).catch(()=>{})}
+function renderActivity(){
+  const list=actItems.filter(i=>actFilter==='all'||i.kind===actFilter);
+  $('#actList').innerHTML=list.length?list.map(i=>{const [ic,c]=ACT[i.kind]||['circle','#98a2bd'];return `<div class="ev" style="--ec:${c}"><span class="dot"><i class="fas fa-${ic}"></i></span><div style="min-width:0"><b>${esc(i.text)}</b><small>${esc(i.t)} · ${esc(i.actor)}</small></div></div>`}).join(''):'<div class="empty-s"><i class="fas fa-clock-rotate-left"></i>Nothing here yet.</div>';
+}
+$('#actChips').addEventListener('click',e=>{const b=e.target.closest('.fchip');if(!b)return;actFilter=b.dataset.f;$$('#actChips .fchip').forEach(x=>x.classList.toggle('on',x===b));renderActivity()});
+setInterval(()=>{if(visible.activity&&!document.hidden)loadActivity();if(visible.accounts&&!document.hidden)loadAccounts()},12000);
+
+/* ---- runtimes ---- */
+let rtTimer=null;
+function loadRuntime(){api('/admin/api/runtime').then(renderRuntime).catch(()=>{})}
+function renderRuntime(rt){
+  const card=(key,name,ic,c,r,desc,canInstall)=>{const job=r.job,running=job&&job.state==='running';
+    return `<div class="panel rt-card"><div class="top"><span class="ic" style="background:${c}22;color:${c}"><i class="${ic}"></i></span><div style="flex:1;min-width:0"><h4>${name}</h4><small>${desc}</small></div>${r.installed?'<span class="badge b-ok">Ready</span>':running?'<span class="badge b-acc">Installing…</span>':'<span class="badge b-bad">Missing</span>'}</div>
+      <div style="font-size:13px;color:var(--tx2)">${r.installed?'Version <b style="font-family:var(--mono)">'+esc(r.version||'?')+'</b>':'Not found on this host.'}</div>
+      ${r.path?`<div class="path">${esc(r.path)}</div>`:'<div class="path">&nbsp;</div>'}
+      ${job&&(running||job.state==='error'||job.log.length)?`<div class="jobbar"><i style="width:${job.progress||(running?5:0)}%"></i></div><div class="joblog">${esc(job.log.slice(-8).join('\n'))}${job.error?'\n'+esc(job.error):''}</div>`:''}
+      ${canInstall?`<div class="acts2" style="margin-top:12px"><button class="btn btn-primary btn-sm" data-i="${key}" ${running?'disabled':''}><i class="fas fa-download"></i> ${r.installed?'Update private copy':'Install now'}</button></div>`:''}
+      ${key==='node'&&!r.installed?`<p class="note" style="margin-top:12px"><i class="fas fa-circle-info"></i>${esc(r.hint||'')}</p>`:''}</div>`};
+  $('#rtGrid').innerHTML=card('node','Node.js','fab fa-node-js','#34d399',rt.node,'Runs Node.js servers',true)+card('cloudflared','Cloudflare tunnel','fas fa-cloud','#ff8f5a',rt.cloudflared,'Public links for static websites',true)+card('python','Python','fab fa-python','#5b8cff',rt.python,'Runs Python servers',false);
+  renderRtMini(rt);
+  clearTimeout(rtTimer);if((rt.node.job&&rt.node.job.state==='running')||(rt.cloudflared.job&&rt.cloudflared.job.state==='running'))rtTimer=setTimeout(loadRuntime,1500);
+}
+$('#rtGrid').addEventListener('click',e=>{const b=e.target.closest('[data-i]');if(!b)return;b.disabled=true;api('/admin/api/runtime/install',{name:b.dataset.i,force:b.textContent.includes('Update')}).then(()=>{toast('success','Installing…');setTimeout(loadRuntime,400)}).catch(er=>{toast('error',er.message);b.disabled=false})});
+
+/* ---- settings ---- */
+function fillSettings(s){
+  $('#setReg').checked=!!s.registration_open;$('#setMaint').checked=!!s.maintenance;$('#setTun').value=s.max_tunnels;
+  $('#annOn').checked=!!s.announcement.enabled;$('#annType').value=s.announcement.type||'info';$('#annText').value=s.announcement.text||'';
+  $('#trDays').value=s.trial.days;$('#trCpu').value=s.trial.cpu_limit;$('#trRam').value=s.trial.ram;$('#trDisk').value=s.trial.disk;$('#trPer').value=s.free_per_account;
+}
+$('#saveSettings').onclick=()=>{
+  api('/admin/api/settings',{registration_open:$('#setReg').checked,maintenance:$('#setMaint').checked,max_tunnels:+$('#setTun').value,
+    announcement:{enabled:$('#annOn').checked,type:$('#annType').value,text:$('#annText').value},
+    trial:{days:+$('#trDays').value,cpu_limit:+$('#trCpu').value,ram:$('#trRam').value,disk:$('#trDisk').value},free_per_account:+$('#trPer').value})
+  .then(()=>toast('success','Settings saved')).catch(e=>toast('error',e.message));
+};
+$('#changePw').onclick=()=>{
+  api('/admin/api/password',{current:$('#pwCur').value,new:$('#pwNew').value}).then(()=>{toast('success','Admin password changed');$('#pwCur').value=$('#pwNew').value='';$('#pwWarn').classList.add('hidden')}).catch(e=>toast('error',e.message));
+};
+$('#pwWarn').addEventListener('click',e=>{if(e.target.closest('a'))$('#settings').scrollIntoView({behavior:'smooth'})});
+
+/* ---- server manager drawer ---- */
+const dr={id:null,tab:'info',data:null,logTimer:null,logText:''};
+function openDrawer(id){dr.id=id;dr.tab='info';dr.data=null;$('#drBg').classList.remove('hidden');$('#drawer').classList.remove('hidden');document.body.style.overflow='hidden';$('#drBody').innerHTML='<div class="empty-s"><div class="spinner"></div></div>';setDrTab('info');loadDrawer()}
+function closeDrawer(){clearInterval(dr.logTimer);$('#drBg').classList.add('hidden');$('#drawer').classList.add('hidden');document.body.style.overflow='';dr.id=null}
+function loadDrawer(){return api('/admin/api/server/'+dr.id).then(d=>{dr.data=d;renderDrawer()}).catch(e=>{toast('error',e.message);closeDrawer()})}
+function setDrTab(t){dr.tab=t;$$('#drTabs button').forEach(b=>b.classList.toggle('on',b.dataset.t===t));clearInterval(dr.logTimer);if(dr.data)renderDrawer()}
+$('#drTabs').addEventListener('click',e=>{const b=e.target.closest('button');if(b)setDrTab(b.dataset.t)});
+$('#drClose').onclick=closeDrawer;$('#drBg').onclick=closeDrawer;
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&dr.id&&!Swal.isVisible())closeDrawer()});
+const stateBadge=s=>({running:'<span class="badge b-ok"><span class="dot pulse-dot"></span>Running</span>',stopped:'<span class="badge b-mute"><span class="dot"></span>Stopped</span>',limited:'<span class="badge b-warn">Rate limited</span>',suspended:'<span class="badge b-warn"><i class="fas fa-ban"></i> Suspended</span>',expired:'<span class="badge b-bad">Expired</span>',provisioning:'<span class="badge b-acc">Creating</span>'}[s]||'');
+function drAct(action,body){return api(`/admin/api/server/${dr.id}/action`,Object.assign({action},body||{})).then(d=>{toast('success',d.msg);dr.data.server=d.server;renderDrawer();softRefresh(false);return d}).catch(e=>toast('error',e.message))}
+function drProc(path){return fetch(path+dr.id,{method:'POST'}).then(r=>r.json()).then(d=>{toast(d.status==='success'?'success':'error',d.msg||'Done');setTimeout(()=>loadDrawer().then(()=>softRefresh(false)),800)}).catch(()=>toast('error','Request failed'))}
+function renderDrawer(){
+  const s=dr.data.server,isStatic=s.type==='static',body=$('#drBody');
+  $('#drAv').textContent=(s.owner||'?')[0].toUpperCase();$('#drTitle').textContent=s.owner;$('#drSub').textContent=s.type+' · '+s.server_id;$('#drState').innerHTML=stateBadge(s.state);
+  const left=s.seconds_left==null?'-':s.seconds_left<=0?'expired':fmtDur(s.seconds_left)+' left';
+  const copyBtn=v=>`<button class="ib" data-c="${esc(v)}" aria-label="Copy"><i class="far fa-copy"></i></button>`;
+  if(dr.tab==='info'){
+    const ss=dr.data.server.site_status;
+    body.innerHTML=`<div class="sec"><h5>Overview</h5><div class="kvl">
+      <div>Owner<b>${esc(s.owner)}</b></div><div>Type<b>${esc(s.type)}</b></div><div>Plan<b>${esc(s.plan||'custom')}</b></div>
+      <div>Resources<b>${esc(s.ram)} · ${esc(s.disk)} · ${s.cpu_limit}% CPU</b></div><div>Expires<b>${esc(s.expiry||'-')} (${left})</b></div>
+      <div>Disk used<b>${fmtB(dr.data.server.disk_bytes||0)}</b></div><div>Main file<b>${esc(s.main_file||'-')}</b></div><div>Env variables<b>${s.env_count}</b></div></div></div>
+    <div class="sec"><h5>Server login</h5><div class="kvl">
+      <div>Username<b>${esc(s.srv_user||'(owner login)')}${s.srv_user?copyBtn(s.srv_user):''}</b></div>
+      <div>Password<b><span id="drPw">••••••••</span><button class="ib" id="drEye" aria-label="Show"><i class="fas fa-eye"></i></button>${s.srv_pass?copyBtn(s.srv_pass):''}</b></div>
+      <div>Login link<b>${esc(s.login_url)}${copyBtn(location.origin+s.login_url)}</b></div></div></div>
+    ${isStatic?`<div class="sec"><h5>Public website link</h5><div class="kvl"><div>State<b>${esc(ss?ss.state:'off')}</b></div>${ss&&ss.url?`<div>Link<b><a class="link" href="${esc(ss.url)}" target="_blank" rel="noopener">${esc(ss.url.replace('https://',''))}</a>${copyBtn(ss.url)}</b></div>`:''}<div>Website files<b>${ss?ss.info.files+' files · '+fmtB(ss.info.bytes):'-'}</b></div></div>${ss&&(ss.state==='live'||ss.state==='starting')?'<button class="btn btn-bad btn-sm" id="drStopSite" style="margin-top:10px"><i class="fas fa-power-off"></i> Stop link</button>':''}</div>`:''}
+    <div class="sec"><h5>Admin note (private)</h5><textarea class="input dr-note" id="drNote" maxlength="500" placeholder="Notes about this server…">${esc(s.note||'')}</textarea><button class="btn btn-ghost btn-sm" id="drNoteSave" style="margin-top:8px"><i class="fas fa-save"></i> Save note</button></div>`;
+    $('#drEye').onclick=e=>{const el=$('#drPw'),hid=el.textContent.startsWith('•');el.textContent=hid?(s.srv_pass||'(not set)'):'••••••••';e.currentTarget.innerHTML='<i class="fas fa-eye'+(hid?'-slash':'')+'"></i>'};
+    $('#drNoteSave').onclick=()=>drAct('note',{text:$('#drNote').value});
+    const st=$('#drStopSite');if(st)st.onclick=()=>api(`/admin/api/tunnel/${s.server_id}/stop`,{}).then(()=>{toast('success','Link stopped');loadDrawer()});
+  }else if(dr.tab==='control'){
+    body.innerHTML=`<div class="sec"><h5>Process</h5>${isStatic?'<p class="note"><i class="fas fa-circle-info"></i> Static websites have no process. Use the public link controls in Details.</p>':`<div class="btn-grid"><button class="btn btn-ok" id="cStart"><i class="fas fa-play"></i> Start</button><button class="btn btn-bad" id="cStop"><i class="fas fa-stop"></i> Stop</button><button class="btn btn-warn" id="cRestart"><i class="fas fa-rotate"></i> Restart</button><button class="btn btn-ghost" id="cClear"><i class="fas fa-eraser"></i> Clear logs</button></div>`}</div>
+    <div class="sec"><h5>Access</h5><div class="btn-grid">${s.suspended?'<button class="btn btn-ok" id="cUnsus"><i class="fas fa-lock-open"></i> Unsuspend</button>':'<button class="btn btn-warn" id="cSus"><i class="fas fa-ban"></i> Suspend</button>'}<button class="btn btn-bad" id="cDel"><i class="fas fa-trash"></i> Delete server</button></div><p class="note" style="margin-top:10px"><i class="fas fa-circle-info"></i> Suspending stops the server, closes its public link and blocks logins until you unsuspend.</p></div>`;
+    const on=(id,fn)=>{const el=$('#'+id);if(el)el.onclick=fn};
+    on('cStart',()=>drProc('/api/run/'));on('cStop',()=>drProc('/api/stop/'));on('cClear',()=>drProc('/api/clear_logs/'));
+    on('cRestart',()=>fetch('/api/stop/'+dr.id,{method:'POST'}).then(()=>setTimeout(()=>drProc('/api/run/'),1800)));
+    on('cSus',()=>drAct('suspend'));on('cUnsus',()=>drAct('unsuspend'));
+    on('cDel',async()=>{const r=await Swal.fire({title:'Delete server?',html:`<b>${esc(s.server_id)}</b> of <b>${esc(s.owner)}</b> and all of its files will be removed.`,icon:'warning',showCancelButton:true,confirmButtonText:'Yes, delete'});if(!r.isConfirmed)return;await fetch(`/admin/delete_server/${encodeURIComponent(s.owner)}/${s.server_id}`,{method:'POST'});toast('success','Server deleted');closeDrawer();softRefresh(false)});
+  }else if(dr.tab==='manage'){
+    const sel=(id,opts,cur)=>`<select class="input" id="${id}">${opts.map(o=>`<option ${o===cur?'selected':''}>${o}</option>`).join('')}</select>`;
+    body.innerHTML=`<div class="sec"><h5>Extend validity</h5><div class="presets" style="display:flex;flex-wrap:wrap;gap:8px">${[1,3,7,30,90].map(d=>`<button class="pre" data-ext="${d}">+${d}d</button>`).join('')}</div>
+      <div class="f2" style="margin-top:12px"><label class="field"><span>Custom days</span><input type="number" class="input" id="mDays" min="1" max="3650" placeholder="e.g. 14"></label><label class="field"><span>Or set exact date</span><input type="date" class="input" id="mDate" value="${esc(s.expiry||'')}"></label></div>
+      <div class="btn-grid" style="margin-top:10px"><button class="btn btn-ghost" id="mExt"><i class="fas fa-calendar-plus"></i> Add days</button><button class="btn btn-ghost" id="mSet"><i class="fas fa-calendar-check"></i> Set date</button></div></div>
+    <div class="sec"><h5>Resources</h5><div class="f2"><label class="field"><span>RAM</span>${sel('mRam',['128MB','256MB','512MB','1GB','2GB','4GB'],s.ram)}</label><label class="field"><span>Disk</span>${sel('mDisk',['512MB','1GB','2GB','5GB','10GB'],s.disk)}</label></div>
+      <label class="field" style="margin-top:12px"><span>CPU limit: <b id="mCpuV">${s.cpu_limit}%</b></span><input type="range" id="mCpu" min="5" max="100" step="5" value="${s.cpu_limit}"></label>
+      <label class="field" style="margin-top:12px"><span>Plan label</span><input class="input" id="mPlan" maxlength="30" value="${esc(s.plan||'')}" placeholder="e.g. free-test, vip"></label>
+      <button class="btn btn-primary" id="mSave" style="margin-top:12px;width:100%"><i class="fas fa-save"></i> Save resources</button></div>
+    <div class="sec"><h5>Server login details</h5><div class="f2"><label class="field"><span>Username</span><input class="input" id="mUser" value="${esc(s.srv_user||'')}" placeholder="auto"></label><label class="field"><span>Password</span><input class="input" id="mPass" placeholder="leave empty for random"></label></div>
+      <div class="btn-grid" style="margin-top:10px"><button class="btn btn-warn" id="mRegen"><i class="fas fa-dice"></i> Generate new</button><button class="btn btn-ghost" id="mCustom"><i class="fas fa-pen"></i> Apply custom</button></div></div>`;
+    $$('[data-ext]').forEach(b=>b.onclick=()=>drAct('extend',{days:+b.dataset.ext}));
+    $('#mExt').onclick=()=>drAct('extend',{days:+$('#mDays').value});$('#mSet').onclick=()=>drAct('set_expiry',{date:$('#mDate').value});
+    $('#mCpu').oninput=e=>$('#mCpuV').textContent=e.target.value+'%';
+    $('#mSave').onclick=()=>drAct('set_specs',{ram:$('#mRam').value,disk:$('#mDisk').value,cpu_limit:+$('#mCpu').value,plan:$('#mPlan').value});
+    $('#mRegen').onclick=()=>drAct('regen_creds');$('#mCustom').onclick=()=>drAct('regen_creds',{username:$('#mUser').value.trim(),password:$('#mPass').value});
+  }else{
+    body.innerHTML=isStatic?'<div class="empty-s"><i class="fas fa-globe" style="color:var(--cy)"></i>Static websites do not have a console.</div>':`<div style="display:flex;gap:8px;margin-bottom:10px"><input class="input" id="lgQ" placeholder="Filter logs…" autocomplete="off"><button class="btn btn-ghost btn-icon" id="lgDl" title="Download"><i class="fas fa-download"></i></button></div><div class="dr-log" id="drLog"></div>`;
+    if(!isStatic){
+      const draw=()=>{const q=($('#lgQ').value||'').toLowerCase(),box=$('#drLog'),tmp=document.createElement('div');tmp.innerHTML=dr.logText;const txt=tmp.textContent||'';const lines=txt.split('\n').filter(l=>!q||l.toLowerCase().includes(q));const stick=box.scrollTop+box.clientHeight>=box.scrollHeight-40;box.textContent=lines.join('\n')||'No logs yet.';if(stick)box.scrollTop=box.scrollHeight};
+      const pull=()=>fetch('/api/logs/'+dr.id).then(r=>r.json()).then(d=>{dr.logText=d.logs||'';if($('#drLog'))draw()}).catch(()=>{});
+      pull();dr.logTimer=setInterval(pull,2500);$('#lgQ').oninput=draw;
+      $('#lgDl').onclick=()=>{const tmp=document.createElement('div');tmp.innerHTML=dr.logText;const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([tmp.textContent],{type:'text/plain'}));a.download='logs-'+dr.id+'.txt';a.click()};
+    }
+  }
+}
+$('#drBody').addEventListener('click',e=>{const c=e.target.closest('[data-c]');if(c)copy(c.dataset.c,'Copied')});
+
+/* ---- bulk actions + extra palette commands ---- */
+async function bulkEach(label,fn){const s=selected();if(!s.length)return;Swal.fire({title:label+'…',allowOutsideClick:false,didOpen:()=>Swal.showLoading()});let ok=0;for(const row of s){try{await fn(row);ok++}catch(e){}}Swal.close();toast('success',`${label}: ${ok}/${s.length} done`);softRefresh(false)}
+$('#bulkStart').onclick=()=>bulkEach('Starting',r=>fetch('/api/run/'+r.dataset.id,{method:'POST'}));
+$('#bulkStop').onclick=()=>bulkEach('Stopping',r=>fetch('/api/stop/'+r.dataset.id,{method:'POST'}));
+$('#bulkSuspend').onclick=()=>bulkEach('Suspending',r=>api(`/admin/api/server/${r.dataset.id}/action`,{action:'suspend'}));
+$('#bulkUnsuspend').onclick=()=>bulkEach('Unsuspending',r=>api(`/admin/api/server/${r.dataset.id}/action`,{action:'unsuspend'}));
+$('#bulkExtend').onclick=async()=>{const s=selected();if(!s.length)return;const r=await Swal.fire({title:`Extend ${s.length} server${s.length>1?'s':''}`,input:'number',inputLabel:'Days to add',inputValue:7,inputAttributes:{min:1,max:3650},showCancelButton:true,confirmButtonText:'Extend'});if(!r.isConfirmed)return;bulkEach('Extending',row=>api(`/admin/api/server/${row.dataset.id}/action`,{action:'extend',days:+r.value}))};
+cmds.push(
+  {i:'users',t:'Go to Accounts',run:()=>$('#accounts').scrollIntoView({behavior:'smooth'})},
+  {i:'globe',t:'Go to Live website links',run:()=>$('#sites').scrollIntoView({behavior:'smooth'})},
+  {i:'clock-rotate-left',t:'Go to Activity log',run:()=>$('#activity').scrollIntoView({behavior:'smooth'})},
+  {i:'screwdriver-wrench',t:'Go to Runtimes (Node.js, Cloudflare)',run:()=>$('#runtime').scrollIntoView({behavior:'smooth'})},
+  {i:'sliders',t:'Go to Settings',run:()=>$('#settings').scrollIntoView({behavior:'smooth'})},
+  {i:'screwdriver-wrench',t:'Install Node.js runtime',run:()=>api('/admin/api/runtime/install',{name:'node'}).then(()=>{toast('success','Installing Node.js…');$('#runtime').scrollIntoView({behavior:'smooth'});setTimeout(loadRuntime,500)}).catch(e=>toast('error',e.message))},
+  {i:'cloud',t:'Install Cloudflare tunnel (cloudflared)',run:()=>api('/admin/api/runtime/install',{name:'cloudflared'}).then(()=>{toast('success','Installing cloudflared…');$('#runtime').scrollIntoView({behavior:'smooth'});setTimeout(loadRuntime,500)}).catch(e=>toast('error',e.message))},
+  {i:'screwdriver-wrench',t:'Toggle maintenance mode',run:()=>api('/admin/api/settings',{maintenance:!$('#setMaint').checked}).then(d=>{$('#setMaint').checked=d.settings.maintenance;toast('success','Maintenance '+(d.settings.maintenance?'ON':'OFF'))})},
+  {i:'download',t:'Download backup',run:()=>location.href='/admin/backup'}
+);
+pollOverview();loadAccounts();loadActivity();loadRuntime();
+
+/* ===================== init ===================== */
+updatePreview();refreshAll();
+try{if(localStorage.getItem('adm_live'))$('#liveChip').click()}catch(e){}
+</script>
+</body>
+</html>

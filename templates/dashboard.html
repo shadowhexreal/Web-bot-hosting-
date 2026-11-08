@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#06080f">
+<title>Dashboard | SHADOW HOSTING</title>
+{% include '_theme.html' %}
+<style>
+.hidden{display:none!important}
+.wrap{width:100%;max-width:1180px;margin-inline:auto;padding-inline:16px}
+header.top{position:sticky;top:0;z-index:40;background:rgba(6,8,15,.85);backdrop-filter:blur(16px) saturate(1.3);border-bottom:1px solid var(--line);padding-top:env(safe-area-inset-top,0)}
+header.top .wrap{display:flex;align-items:center;gap:10px;height:62px}
+.brand span:last-child{display:none}
+.who{display:flex;align-items:center;gap:10px;padding:4px 12px 4px 4px;border-radius:14px;border:1px solid var(--line2);background:rgba(255,255,255,.03);margin-left:auto;min-width:0}
+.who .av{display:grid;place-items:center;width:32px;height:32px;border-radius:10px;background:var(--grad);color:#04101f;font-weight:800;font-size:13px;flex-shrink:0}
+.who b{font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:110px}
+main{padding:20px 0 calc(40px + env(safe-area-inset-bottom,0))}
+.hello h1{font-size:26px;font-weight:800;letter-spacing:-.03em}
+.hello p{margin:6px 0 0;color:var(--tx2);font-size:14px}
+
+/* promo */
+.promo{margin:18px 0 6px;padding:20px;border-radius:24px;position:relative;overflow:hidden;border:1px solid rgba(91,140,255,.35);background:radial-gradient(420px 220px at 0% 0%,rgba(91,140,255,.3),transparent 70%),radial-gradient(380px 220px at 100% 100%,rgba(56,211,245,.2),transparent 70%),var(--s1)}
+.promo .tag{display:inline-flex;align-items:center;gap:8px;padding:5px 12px;border-radius:999px;background:rgba(6,8,15,.5);border:1px solid var(--line2);font-size:12px;font-weight:600;color:var(--acc2)}
+.promo h2{font-size:22px;margin:14px 0 6px;letter-spacing:-.03em}
+.promo p{margin:0 0 16px;color:var(--tx2);font-size:14px}
+.specs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-bottom:18px}
+.specs div{padding:10px 12px;border-radius:12px;background:rgba(6,8,15,.55);border:1px solid var(--line);font-size:12px;color:var(--tx3)}
+.specs b{display:block;margin-top:2px;font:700 15px var(--display);color:var(--tx)}
+.promo .btn{width:100%;padding:15px;font-size:15px}
+.note{display:flex;gap:12px;align-items:flex-start;padding:16px;border-radius:18px;background:var(--s1);border:1px solid var(--line);color:var(--tx2);font-size:13.5px;margin:18px 0 6px}
+.note i{color:var(--warn);margin-top:3px}
+.note a{color:var(--acc2);font-weight:600}
+
+.sec-h{display:flex;align-items:center;justify-content:space-between;margin:26px 0 14px}
+.sec-h h2{font-size:18px}
+.sec-h span{font-size:12.5px;color:var(--tx3)}
+.grid{display:grid;grid-template-columns:minmax(0,1fr);gap:14px}
+.srv{padding:16px;border-radius:22px;background:linear-gradient(180deg,var(--s2),var(--s1));border:1px solid var(--line);min-width:0;transition:border-color .3s,transform .3s var(--ease)}
+.srv:hover{border-color:#34426a}
+.s-top{display:flex;gap:12px;align-items:center}
+.s-ic{display:grid;place-items:center;width:46px;height:46px;border-radius:15px;font-size:20px;flex-shrink:0}
+.s-ic.python{background:rgba(91,140,255,.15);color:var(--acc2)}.s-ic.node{background:rgba(52,211,153,.14);color:var(--ok)}.s-ic.static{background:rgba(56,211,245,.14);color:var(--cy)}
+.s-t{min-width:0;flex:1}
+.s-t b{display:block;font:700 16px var(--display);letter-spacing:-.01em}
+.s-t small{display:block;color:var(--tx3);font:12px var(--mono);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:14px 0}
+.chip{padding:4px 10px;border-radius:9px;background:var(--s3);font-size:12px;color:var(--tx2);font-weight:600;display:inline-flex;align-items:center;gap:6px}
+.chip.free{background:rgba(91,140,255,.14);color:var(--acc2)}
+.chip.warn{background:rgba(251,191,36,.12);color:var(--warn)}
+.chip.bad{background:rgba(248,113,113,.12);color:var(--bad)}
+.cred{margin-top:4px;border-radius:14px;background:var(--bg);border:1px solid var(--line);overflow:hidden}
+.cred summary{list-style:none;display:flex;align-items:center;gap:10px;padding:12px 14px;font-size:13px;font-weight:600;color:var(--tx2);cursor:pointer;user-select:none}
+.cred summary::-webkit-details-marker{display:none}
+.cred summary i.ch{margin-left:auto;transition:transform .3s var(--ease);font-size:11px}
+.cred[open] summary i.ch{transform:rotate(180deg)}
+.cr{display:flex;align-items:center;gap:8px;padding:10px 12px 10px 14px;border-top:1px solid var(--line);min-width:0}
+.cr small{width:62px;color:var(--tx3);font-size:11.5px;flex-shrink:0}
+.cr code{flex:1;min-width:0;font:500 13px var(--mono);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--tx)}
+.ib{width:34px;height:34px;border:0;border-radius:10px;background:none;color:var(--tx3);flex-shrink:0}
+.ib:hover,.ib:active{background:rgba(255,255,255,.07);color:var(--tx)}
+.s-act{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px;margin-top:14px}
+.s-act .btn{width:100%;padding-inline:8px}
+.s-act .full{grid-column:1/-1}
+.prog{margin-top:14px}
+.prog .t{height:8px;border-radius:8px;background:var(--line);overflow:hidden}
+.prog .t i{display:block;height:100%;width:0;background:var(--grad);border-radius:8px;transition:width .6s linear}
+.prog small{display:block;margin-top:8px;color:var(--tx3);font-size:12.5px}
+.empty{padding:40px 20px;text-align:center;border-radius:22px;border:1px dashed var(--line2);color:var(--tx3)}
+.empty i{font-size:34px;opacity:.5;display:block;margin-bottom:12px}
+
+/* sheet + overlay */
+.modal{position:fixed;inset:0;z-index:100;display:flex;align-items:flex-end;justify-content:center;background:rgba(3,5,10,.78);backdrop-filter:blur(6px);animation:fade .2s}
+@keyframes fade{from{opacity:0}}
+.sheet{width:100%;max-width:520px;max-height:92dvh;overflow-y:auto;background:var(--s2);border:1px solid var(--line2);border-radius:26px 26px 0 0;padding:22px 18px calc(22px + env(safe-area-inset-bottom,0));animation:up .35s var(--ease)}
+@keyframes up{from{transform:translateY(40px);opacity:0}}
+.sheet h3{font-size:20px;margin-bottom:6px}
+.sheet>p{margin:0 0 16px;color:var(--tx2);font-size:14px}
+.types{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:16px}
+.type{position:relative;padding:14px 6px;border-radius:18px;border:1.5px solid var(--line2);background:var(--bg);text-align:center;transition:all .25s var(--ease);color:var(--tx)}
+.type i{display:block;font-size:28px;margin-bottom:8px}
+.type b{display:block;font:700 15px var(--display)}
+.type small{display:block;color:var(--tx3);font-size:11px;margin-top:2px;line-height:1.3}
+.type.on{border-color:var(--acc);background:rgba(91,140,255,.1);box-shadow:0 10px 30px -14px var(--acc)}
+.type.on::after{content:"\f058";font-family:"Font Awesome 6 Free";font-weight:900;position:absolute;top:8px;right:10px;color:var(--acc2);font-size:15px}
+.sheet .specs{margin-bottom:16px}
+.sheet .acts{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.5fr);gap:10px}
+.sheet .btn{padding:14px}
+
+#prov{background:radial-gradient(600px 400px at 50% 20%,rgba(43,85,214,.35),transparent 70%),#04060c;align-items:stretch;padding:0;overflow-y:auto;backdrop-filter:none}
+.pv{width:100%;max-width:520px;margin:0 auto;padding:calc(18px + env(safe-area-inset-top,0)) 18px calc(24px + env(safe-area-inset-bottom,0));display:flex;flex-direction:column;min-height:100dvh}
+.pv-top{display:flex;align-items:center;justify-content:space-between;color:var(--tx3);font-size:13px}
+.pv-top button{background:none;border:0;color:var(--tx2);padding:8px 4px;font-size:13px}
+.stage{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:10px 0}
+.rack{position:relative;width:min(230px,62vw);filter:drop-shadow(0 0 40px rgba(91,140,255,.35))}
+.rack svg{display:block;width:100%;height:auto}
+.unit{fill:#0d1424;stroke:#27314a;stroke-width:1.5}
+.unit.lit{stroke:#5b8cff;fill:#101a33;transition:all .5s}
+.led{fill:#27314a;transition:fill .3s}
+.lit .led,.led.on{fill:#34d399;animation:blink 1.4s infinite}
+.led.b{fill:#38d3f5}
+@keyframes blink{50%{opacity:.35}}
+.beam{fill:url(#beamg);animation:scan 2.4s linear infinite}
+@keyframes scan{from{transform:translateY(-30px)}to{transform:translateY(250px)}}
+.ringw{position:relative;width:132px;height:132px}
+.ringw svg{transform:rotate(-90deg);width:100%;height:100%}
+.ringw circle{fill:none;stroke-width:8;stroke-linecap:round}
+.ringw .bg{stroke:var(--line)}
+.ringw .fg{stroke:url(#rg);stroke-dasharray:327;stroke-dashoffset:327}
+.ringw .pct{position:absolute;inset:0;display:grid;place-items:center;text-align:center}
+.ringw .pct b{font:800 30px/1 var(--display)}
+.ringw .pct small{display:block;font:500 11px var(--mono);color:var(--tx3);margin-top:4px}
+.orbit{position:absolute;inset:-10px;border-radius:50%;border:1px dashed rgba(91,140,255,.3);animation:spin 12s linear infinite}
+.orbit::after{content:"";position:absolute;top:-4px;left:50%;width:8px;height:8px;margin-left:-4px;border-radius:50%;background:var(--cy);box-shadow:0 0 12px var(--cy)}
+.pv h2{font-size:22px;text-align:center;letter-spacing:-.03em}
+.pv .sub{margin:6px 0 0;text-align:center;color:var(--tx3);font-size:13.5px}
+.steps{width:100%;display:grid;gap:8px;margin-top:4px}
+.stp{display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:14px;background:rgba(255,255,255,.025);border:1px solid var(--line);font-size:13px;color:var(--tx3);transition:all .4s var(--ease)}
+.stp i{display:grid;place-items:center;width:22px;height:22px;border-radius:50%;border:1.5px solid var(--line2);font-size:10px;flex-shrink:0;transition:all .3s}
+.stp.act{color:var(--tx);border-color:rgba(91,140,255,.45);background:rgba(91,140,255,.08)}
+.stp.act i{border-color:var(--acc);border-top-color:transparent;animation:spin .8s linear infinite}
+.stp.done{color:var(--tx2)}
+.stp.done i{background:var(--ok);border-color:var(--ok);color:#04101f}
+.logbox{width:100%;height:92px;overflow:hidden;border-radius:14px;background:#05070c;border:1px solid var(--line);padding:10px 12px;font:11.5px/1.6 var(--mono);color:#8c97b3;display:flex;flex-direction:column;justify-content:flex-end}
+.logbox div{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.logbox .g{color:var(--ok)}.logbox .c{color:var(--cy)}
+.bgbtn{margin-top:4px}
+#done{text-align:center}
+.okmark{width:84px;height:84px;margin:0 auto 14px;border-radius:50%;display:grid;place-items:center;font-size:36px;color:#04101f;background:var(--grad);box-shadow:0 0 0 0 rgba(56,211,245,.6);animation:pop .6s var(--ease),pulse 2s 0.6s infinite}
+@keyframes pop{from{transform:scale(.3);opacity:0}}
+@keyframes pulse{70%{box-shadow:0 0 0 22px rgba(56,211,245,0)}100%{box-shadow:0 0 0 0 rgba(56,211,245,0)}}
+#done .credbox{margin:18px 0 6px;text-align:left;border-radius:18px;background:var(--s1);border:1px solid var(--line2);overflow:hidden}
+#done .cr:first-child{border-top:0}
+#done .cr small{width:70px}
+#done .warn{display:flex;gap:10px;align-items:flex-start;text-align:left;margin:12px 0 18px;padding:12px 14px;border-radius:14px;background:rgba(251,191,36,.08);border:1px solid rgba(251,191,36,.3);color:var(--warn);font-size:12.5px}
+#done .warn i{margin-top:2px}
+#done .btns{display:grid;gap:10px}
+#done .btns .btn{padding:14px;width:100%}
+#confetti{position:fixed;inset:0;pointer-events:none;z-index:120}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+@media(min-width:640px){
+  .brand span:last-child{display:inline}.who b{max-width:200px}
+  .hello h1{font-size:32px}
+  .modal{align-items:center;padding:20px}
+  .sheet{border-radius:26px;padding:26px}
+  .promo{padding:28px}.promo h2{font-size:26px}
+  .specs{grid-template-columns:repeat(4,minmax(0,1fr))}
+  .promo .btn{width:auto;padding:15px 28px}
+  .grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(min-width:1000px){.grid{grid-template-columns:repeat(3,minmax(0,1fr))}.wrap{padding-inline:24px}}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a href="/dashboard" class="brand"><span class="logo-mark"><i class="fas fa-cloud-upload-alt"></i></span><span>SHADOW <small>HOSTING</small></span></a>
+    <div class="who"><div class="av">{{ username[0] | upper }}</div><b>{{ username }}</b></div>
+    <a href="/logout" class="btn btn-bad btn-icon" title="Sign out" aria-label="Sign out"><i class="fas fa-sign-out-alt"></i></a>
+  </div>
+</header>
+{% include '_announce.html' %}
+
+<main class="wrap">
+  <div class="hello">
+    <h1>Hi, {{ username }}</h1>
+    <p>{% if servers %}Manage your servers and their login details here.{% else %}Create your first server to get started.{% endif %}</p>
+  </div>
+
+  {% if is_account and free_left > 0 %}
+  <section class="promo">
+    <span class="tag"><i class="fas fa-gift"></i> Free for new accounts</span>
+    <h2>Claim your free test server</h2>
+    <p>Pick Python or Node.js. We create the server and generate its own username and password for you.</p>
+    <div class="specs">
+      <div>Validity<b>{{ trial.days }} days</b></div>
+      <div>RAM<b>{{ trial.ram }}</b></div>
+      <div>Storage<b>{{ trial.disk }}</b></div>
+      <div>CPU limit<b>{{ trial.cpu_limit }}%</b></div>
+    </div>
+    <button class="btn btn-primary" id="openCreate"><i class="fas fa-rocket"></i> Create free server</button>
+  </section>
+  {% elif is_account %}
+  <div class="note"><i class="fas fa-circle-info"></i><div>You have used your free test server. Need more power or another server? <a href="https://t.me/SHADOW_HEX_GOD" target="_blank">Contact support on Telegram</a>.</div></div>
+  {% else %}
+  <div class="note"><i class="fas fa-circle-info"></i><div>These servers were created for you by the admin. Free test servers are available for newly registered accounts only.</div></div>
+  {% endif %}
+
+  <div class="sec-h"><h2>Your servers</h2><span>{{ servers|length }} total</span></div>
+
+  <div class="grid" id="grid">
+    {% for s in servers %}
+    <article class="srv" data-id="{{ s.server_id }}" data-state="{{ s.state }}" data-sec="{{ s.seconds_left if s.seconds_left is not none else '' }}">
+      <div class="s-top">
+        <div class="s-ic {{ s.type }}"><i class="{% if s.type == 'node' %}fab fa-node-js{% elif s.type == 'static' %}fas fa-globe{% else %}fab fa-python{% endif %}"></i></div>
+        <div class="s-t"><b>{% if s.type == 'node' %}Node.js server{% elif s.type == 'static' %}Static website{% else %}Python server{% endif %}</b><small>ID {{ s.server_id }}</small></div>
+        {% if s.state == 'running' %}<span class="badge b-ok"><span class="dot pulse-dot"></span>Running</span>
+        {% elif s.state == 'provisioning' %}<span class="badge b-acc"><span class="dot pulse-dot"></span>Creating</span>
+        {% elif s.state == 'expired' %}<span class="badge b-bad">Expired</span>
+        {% elif s.state == 'suspended' %}<span class="badge b-warn"><i class="fas fa-ban"></i> Suspended</span>
+        {% elif s.state == 'limited' %}<span class="badge b-warn">Rate limited</span>
+        {% else %}<span class="badge b-mute"><span class="dot"></span>Stopped</span>{% endif %}
+      </div>
+      <div class="chips">
+        {% if s.plan == 'free-test' %}<span class="chip free"><i class="fas fa-gift"></i> Free test</span>{% endif %}
+        <span class="chip"><i class="fas fa-memory"></i> {{ s.ram }}</span>
+        <span class="chip"><i class="fas fa-hard-drive"></i> {{ s.disk }}</span>
+        <span class="chip"><i class="fas fa-microchip"></i> {{ s.cpu_limit }}% CPU</span>
+        <span class="chip js-left" {% if s.state == 'expired' %}style="color:var(--bad)"{% endif %}><i class="far fa-clock"></i> <span>{{ s.expiry or 'No expiry' }}</span></span>
+      </div>
+
+      {% if s.state == 'provisioning' %}
+        <div class="prog"><div class="t"><i></i></div><small>Setting up your server…</small></div>
+        <div class="s-act"><button class="btn btn-primary full js-watch"><i class="fas fa-eye"></i> Watch progress</button></div>
+      {% else %}
+        {% if s.srv_user %}
+        <details class="cred">
+          <summary><i class="fas fa-key" style="color:var(--acc2)"></i> Server login details <i class="fas fa-chevron-down ch"></i></summary>
+          <div class="cr"><small>Username</small><code>{{ s.srv_user }}</code><button class="ib" data-copy="{{ s.srv_user }}" aria-label="Copy username"><i class="far fa-copy"></i></button></div>
+          <div class="cr"><small>Password</small><code class="pwv" data-pw="{{ s.srv_pass }}">••••••••••••</code><button class="ib js-eye" aria-label="Show password"><i class="fas fa-eye"></i></button><button class="ib" data-copy="{{ s.srv_pass }}" aria-label="Copy password"><i class="far fa-copy"></i></button></div>
+          <div class="cr"><small>Login link</small><code>{{ base }}{{ s.login_url }}</code><button class="ib" data-copy="{{ base }}{{ s.login_url }}" aria-label="Copy link"><i class="far fa-copy"></i></button></div>
+        </details>
+        {% endif %}
+        <div class="s-act">
+          {% if s.state == 'suspended' %}
+            <a href="https://t.me/SHADOW_HEX_GOD" target="_blank" class="btn btn-warn full"><i class="fab fa-telegram-plane"></i> Contact support</a>
+          {% elif s.state == 'expired' %}
+            <a href="https://t.me/SHADOW_HEX_GOD" target="_blank" class="btn btn-warn full"><i class="fab fa-telegram-plane"></i> Renew via support</a>
+          {% else %}
+            <a href="/open/{{ s.server_id }}" class="btn btn-primary"><i class="fas fa-terminal"></i> Open panel</a>
+            <a href="{{ s.login_url }}" class="btn btn-ghost"><i class="fas fa-right-to-bracket"></i> Server login</a>
+          {% endif %}
+        </div>
+      {% endif %}
+    </article>
+    {% endfor %}
+  </div>
+  {% if not servers %}
+  <div class="empty"><i class="fas fa-server"></i>No servers yet.{% if is_account and free_left > 0 %} Tap “Create free server” above.{% endif %}</div>
+  {% endif %}
+</main>
+
+<!-- choose type -->
+<div class="modal hidden" id="createModal"><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="ct">
+  <h3 id="ct">Create free test server</h3>
+  <p>Choose what you want to run.</p>
+  <div class="types" id="types">
+    <button type="button" class="type on" data-type="python"><i class="fab fa-python" style="color:var(--acc2)"></i><b>Python</b><small>Bots, Flask, scripts</small></button>
+    <button type="button" class="type" data-type="node"><i class="fab fa-node-js" style="color:var(--ok)"></i><b>Node.js</b><small>Bots, Express, apps</small></button>
+    <button type="button" class="type" data-type="static"><i class="fas fa-globe" style="color:var(--cy)"></i><b>Website</b><small>HTML site + Cloudflare link</small></button>
+  </div>
+  <div class="specs">
+    <div>Validity<b>{{ trial.days }} days</b></div><div>RAM<b>{{ trial.ram }}</b></div>
+    <div>Storage<b>{{ trial.disk }}</b></div><div>CPU limit<b>{{ trial.cpu_limit }}%</b></div>
+  </div>
+  <div class="acts"><button class="btn btn-ghost" id="cancelCreate">Cancel</button><button class="btn btn-primary" id="startCreate"><i class="fas fa-rocket"></i> Create server</button></div>
+</div></div>
+
+<!-- creation animation (30-40s) -->
+<div class="modal hidden" id="prov"><canvas id="confetti"></canvas>
+  <div class="pv">
+    <div class="pv-top"><span><i class="fas fa-lock" style="margin-right:6px"></i>Secure provisioning</span><button id="bgBtn">Continue in background</button></div>
+    <div class="stage" id="stage">
+      <div class="rack">
+        <svg viewBox="0 0 200 230" aria-hidden="true">
+          <defs><linearGradient id="beamg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#38d3f5" stop-opacity="0"/><stop offset=".5" stop-color="#38d3f5" stop-opacity=".35"/><stop offset="1" stop-color="#38d3f5" stop-opacity="0"/></linearGradient>
+          <clipPath id="rc"><rect x="10" y="10" width="180" height="210" rx="18"/></clipPath></defs>
+          <rect x="6" y="6" width="188" height="218" rx="22" fill="#080c16" stroke="#1c2438" stroke-width="2"/>
+          <g id="units"></g>
+          <g clip-path="url(#rc)"><rect class="beam" x="10" y="0" width="180" height="30"/></g>
+        </svg>
+      </div>
+      <div class="ringw"><div class="orbit"></div>
+        <svg viewBox="0 0 120 120"><defs><linearGradient id="rg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#5b8cff"/><stop offset="1" stop-color="#38d3f5"/></linearGradient></defs><circle class="bg" cx="60" cy="60" r="52"/><circle class="fg" id="ring" cx="60" cy="60" r="52"/></svg>
+        <div class="pct"><div><b id="pct">0%</b><small id="eta">~35s left</small></div></div>
+      </div>
+      <div><h2 id="pTitle">Creating your server</h2><p class="sub" id="pSub">Please keep this page open for a moment.</p></div>
+      <div class="steps" id="steps"></div>
+      <div class="logbox" id="plog"></div>
+    </div>
+    <div id="done" class="hidden">
+      <div class="okmark"><i class="fas fa-check"></i></div>
+      <h2>Your server is ready</h2>
+      <p class="sub">These are the login details of your new server.</p>
+      <div class="credbox" id="dCreds"></div>
+      <div class="warn"><i class="fas fa-triangle-exclamation"></i><span>Save these details now. You can also find them anytime on your dashboard.</span></div>
+      <div class="btns">
+        <a class="btn btn-primary" id="dOpen" href="#"><i class="fas fa-terminal"></i> Open server panel</a>
+        <button class="btn btn-ghost" id="dCopy"><i class="far fa-copy"></i> Copy login details</button>
+        <button class="btn btn-ghost" id="dClose">Go to dashboard</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast-container" id="toasts"></div>
+
+<script>
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const reduce=matchMedia('(prefers-reduced-motion:reduce)').matches;
+const TRIAL={ram:'{{ trial.ram }}',disk:'{{ trial.disk }}',cpu:{{ trial.cpu_limit }}};
+const RESUME_IDS=[{% for s in servers %}{% if s.state == 'provisioning' %}'{{ s.server_id }}',{% endif %}{% endfor %}];
+const OPEN_NEW={{ 'true' if open_new and is_account and free_left > 0 else 'false' }};
+
+function toast(msg,type='info'){
+  const t=document.createElement('div');t.className='toast '+type;
+  const ic={success:'check-circle',error:'times-circle',warning:'exclamation-triangle',info:'info-circle'}[type]||'info-circle';
+  const col={success:'var(--ok)',error:'var(--bad)',warning:'var(--warn)',info:'var(--acc2)'}[type];
+  t.innerHTML=`<i class="fas fa-${ic}" style="color:${col};font-size:17px"></i><p style="flex:1"></p>`;t.querySelector('p').textContent=msg;
+  $('#toasts').appendChild(t);setTimeout(()=>{t.style.animation='toastOut .3s forwards';setTimeout(()=>t.remove(),300)},2600);
+}
+function copy(text,msg){
+  const ok=()=>toast(msg||'Copied','success');
+  if(navigator.clipboard&&window.isSecureContext)navigator.clipboard.writeText(text).then(ok,()=>toast('Copy failed','error'));
+  else{const a=document.createElement('textarea');a.value=text;a.style.cssText='position:fixed;opacity:0';document.body.appendChild(a);a.select();try{document.execCommand('copy');ok()}catch(e){toast('Copy failed','error')}a.remove()}
+}
+document.addEventListener('click',e=>{
+  const c=e.target.closest('[data-copy]');if(c){copy(c.dataset.copy);return}
+  const eye=e.target.closest('.js-eye');
+  if(eye){const code=eye.parentElement.querySelector('.pwv'),hid=code.textContent.startsWith('•');code.textContent=hid?code.dataset.pw:'••••••••••••';eye.innerHTML='<i class="fas fa-eye'+(hid?'-slash':'')+'"></i>'}
+});
+
+/* ---------- expiry countdown ---------- */
+const t0=Date.now();
+function fmtLeft(sec){
+  if(sec<=0)return 'Expired';
+  const d=Math.floor(sec/86400),h=Math.floor(sec%86400/3600),m=Math.floor(sec%3600/60);
+  return d>0?`${d}d ${h}h left`:h>0?`${h}h ${m}m left`:`${Math.max(1,m)}m left`;
+}
+function tick(){
+  $$('.srv').forEach(card=>{
+    const base=parseInt(card.dataset.sec);if(isNaN(base)||card.dataset.state==='provisioning')return;
+    const left=base-Math.floor((Date.now()-t0)/1000),el=card.querySelector('.js-left');
+    el.querySelector('span').textContent=fmtLeft(left);
+    el.classList.toggle('warn',left>0&&left<86400);el.classList.toggle('bad',left<=0);
+  });
+}
+tick();setInterval(tick,30000);
+
+/* ---------- create sheet ---------- */
+let chosen='python';
+const createModal=$('#createModal');
+function openCreate(){createModal.classList.remove('hidden')}
+function closeCreate(){createModal.classList.add('hidden')}
+const oc=$('#openCreate');if(oc)oc.onclick=openCreate;
+$('#cancelCreate').onclick=closeCreate;
+createModal.addEventListener('mousedown',e=>{if(e.target===createModal)closeCreate()});
+$('#types').addEventListener('click',e=>{const b=e.target.closest('.type');if(!b)return;chosen=b.dataset.type;$$('.type').forEach(x=>x.classList.toggle('on',x===b))});
+$('#startCreate').onclick=async()=>{
+  const btn=$('#startCreate');btn.disabled=true;
+  try{
+    const r=await fetch('/api/account/create_server',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({type:chosen})});
+    const d=await r.json();
+    if(d.status==='success'){closeCreate();runProvision(d.server_id,d.duration,d.duration,chosen)}
+    else{toast(d.msg||'Could not create server','error');btn.disabled=false}
+  }catch(e){toast('Connection failed!','error');btn.disabled=false}
+};
+
+/* ---------- provisioning animation ---------- */
+const STAGES=[
+  [0,'Allocating resources','allocate --ram '+TRIAL.ram+' --disk '+TRIAL.disk+' --cpu '+TRIAL.cpu+'%'],
+  [12,'Creating isolated environment','sandbox create --network private'],
+  [28,'Installing runtime','install-runtime --type __T__'],
+  [45,'Preparing file system','mkdir /app && write starter files'],
+  [60,'Generating secure credentials','keygen --user --password (random)'],
+  [75,'Configuring panel and network','route --panel /login --tls on'],
+  [90,'Running health checks','healthcheck --all']
+];
+const UNITS=4;
+(function buildRack(){
+  let h='';for(let i=0;i<UNITS;i++){const y=22+i*49;
+    h+=`<g class="u" id="u${i}"><rect class="unit" x="22" y="${y}" width="156" height="40" rx="9"/><circle class="led" cx="42" cy="${y+20}" r="4"/><circle class="led b" cx="58" cy="${y+20}" r="4"/><rect x="82" y="${y+14}" width="76" height="4" rx="2" fill="#1c2438"/><rect x="82" y="${y+23}" width="52" height="4" rx="2" fill="#1c2438"/></g>`}
+  $('#units').innerHTML=h;
+})();
+$('#steps').innerHTML=STAGES.map((s,i)=>`<div class="stp" id="st${i}"><i><span class="fas fa-check" style="display:none"></span></i><span>${s[1]}</span></div>`).join('');
+
+let provTimer=null,provId=null,provType='python',provEnd=0,provTotal=1,lastStage=-1,finishing=false;
+function logLine(html){const b=$('#plog');const d=document.createElement('div');d.innerHTML=html;b.appendChild(d);while(b.children.length>5)b.removeChild(b.firstChild)}
+function resetProv(){
+  lastStage=-1;finishing=false;$('#plog').innerHTML='';$('#done').classList.add('hidden');$('#stage').classList.remove('hidden');$('#bgBtn').classList.remove('hidden');
+  $$('.stp').forEach(s=>{s.className='stp';s.querySelector('span.fas').style.display='none'});$$('#units .unit').forEach(u=>u.classList.remove('lit'));
+  $('#ring').style.strokeDashoffset=327;$('#pct').textContent='0%';
+}
+function runProvision(id,remaining,total,type){
+  provId=id;provType=type||'python';provTotal=Math.max(1,total);provEnd=performance.now()+remaining*1000;
+  resetProv();$('#prov').classList.remove('hidden');document.body.style.overflow='hidden';
+  clearInterval(provTimer);provTimer=setInterval(frame,250);frame();
+}
+function frame(){
+  const left=Math.max(0,(provEnd-performance.now())/1000),p=Math.min(1,1-left/provTotal),pc=Math.floor(p*100);
+  $('#ring').style.strokeDashoffset=327-327*p;$('#pct').textContent=pc+'%';$('#eta').textContent=left>0?'~'+Math.ceil(left)+'s left':'Almost done…';
+  let idx=0;STAGES.forEach((s,i)=>{if(pc>=s[0])idx=i});
+  if(idx!==lastStage){
+    for(let i=0;i<idx;i++){const el=$('#st'+i);el.className='stp done';el.querySelector('span.fas').style.display='block'}
+    $('#st'+idx).className='stp act';
+    const lit=Math.ceil((idx+1)/STAGES.length*UNITS);
+    for(let i=0;i<lit;i++){const g=$('#u'+i);g.classList.add('lit');g.querySelector('.unit').classList.add('lit')}
+    if(lastStage>=0)logLine('<span class="g">✓</span> '+esc(STAGES[lastStage][1])+' complete');
+    logLine('<span class="c">$</span> '+esc(STAGES[idx][2].replace('__T__',provType==='node'?'nodejs':provType==='static'?'static-web':'python3.12')));
+    $('#pTitle').textContent=STAGES[idx][1];lastStage=idx;
+  }
+  if(left<=0&&!finishing){finishing=true;clearInterval(provTimer);finish()}
+}
+async function finish(){
+  $$('.stp').forEach(s=>{s.className='stp done';s.querySelector('span.fas').style.display='block'});
+  $('#pTitle').textContent='Server ready!';$('#pct').textContent='100%';$('#ring').style.strokeDashoffset=0;
+  for(let tries=0;tries<20;tries++){
+    try{
+      const r=await fetch('/api/account/server_status/'+provId);const d=await r.json();
+      if(d.state==='ready'){return showDone(d.server)}
+      if(d.state==='provisioning'){await new Promise(r=>setTimeout(r,Math.max(500,d.remaining*1000+300)));continue}
+    }catch(e){await new Promise(r=>setTimeout(r,1500))}
+  }
+  toast('Server is ready. Reloading…','success');setTimeout(()=>location.href='/dashboard',1200);
+}
+function showDone(s){
+  $('#stage').classList.add('hidden');$('#bgBtn').classList.add('hidden');$('#done').classList.remove('hidden');
+  const full=location.origin+s.login_url;
+  $('#dCreds').innerHTML=
+   `<div class="cr"><small>Username</small><code>${esc(s.srv_user)}</code><button class="ib" data-copy="${esc(s.srv_user)}" aria-label="Copy"><i class="far fa-copy"></i></button></div>`+
+   `<div class="cr"><small>Password</small><code>${esc(s.srv_pass)}</code><button class="ib" data-copy="${esc(s.srv_pass)}" aria-label="Copy"><i class="far fa-copy"></i></button></div>`+
+   `<div class="cr"><small>Login link</small><code>${esc(full)}</code><button class="ib" data-copy="${esc(full)}" aria-label="Copy"><i class="far fa-copy"></i></button></div>`;
+  $('#dOpen').href='/open/'+s.server_id;
+  $('#dCopy').onclick=()=>copy(`Server login: ${full}\nUsername: ${s.srv_user}\nPassword: ${s.srv_pass}`,'Login details copied');
+  if(!reduce)confetti();
+}
+$('#dClose').onclick=()=>location.href='/dashboard';
+$('#bgBtn').onclick=()=>{clearInterval(provTimer);$('#prov').classList.add('hidden');document.body.style.overflow='';toast('Your server keeps being created in the background','info');setTimeout(()=>location.href='/dashboard',900)};
+$$('.js-watch').forEach(b=>b.onclick=async()=>{
+  const id=b.closest('.srv').dataset.id;
+  try{const r=await fetch('/api/account/server_status/'+id);const d=await r.json();
+    if(d.state==='provisioning')runProvision(id,d.remaining,d.total,d.type);else location.reload();
+  }catch(e){toast('Connection failed!','error')}
+});
+/* progress bars on cards that are still being created */
+(function(){
+  $$('.srv[data-state=provisioning]').forEach(async card=>{
+    try{const r=await fetch('/api/account/server_status/'+card.dataset.id);const d=await r.json();
+      if(d.state!=='provisioning'){location.reload();return}
+      const end=performance.now()+d.remaining*1000,bar=card.querySelector('.prog .t i'),txt=card.querySelector('.prog small');
+      const iv=setInterval(()=>{const left=Math.max(0,(end-performance.now())/1000);bar.style.width=Math.min(100,(1-left/d.total)*100)+'%';txt.textContent=left>0?'Setting up your server… about '+Math.ceil(left)+'s left':'Finishing…';if(left<=0){clearInterval(iv);setTimeout(()=>location.reload(),1500)}},500);
+    }catch(e){}
+  });
+})();
+
+/* confetti */
+function confetti(){
+  const c=$('#confetti'),x=c.getContext('2d');c.width=innerWidth;c.height=innerHeight;
+  const cols=['#5b8cff','#38d3f5','#34d399','#fbbf24','#ff8f5a'];
+  const ps=Array.from({length:90},()=>({x:innerWidth/2,y:innerHeight*.38,vx:(Math.random()-.5)*11,vy:-Math.random()*11-3,s:Math.random()*6+3,c:cols[Math.random()*cols.length|0],r:Math.random()*6,vr:(Math.random()-.5)*.4}));
+  let f=0;(function draw(){x.clearRect(0,0,c.width,c.height);ps.forEach(p=>{p.vy+=.28;p.x+=p.vx;p.y+=p.vy;p.r+=p.vr;x.save();x.translate(p.x,p.y);x.rotate(p.r);x.fillStyle=p.c;x.fillRect(-p.s/2,-p.s/2,p.s,p.s*.6);x.restore()});if(++f<120)requestAnimationFrame(draw);else x.clearRect(0,0,c.width,c.height)})();
+}
+
+/* start-up behaviour */
+if(RESUME_IDS.length){fetch('/api/account/server_status/'+RESUME_IDS[0]).then(r=>r.json()).then(d=>{if(d.state==='provisioning')runProvision(RESUME_IDS[0],d.remaining,d.total,d.type)})}
+else if(OPEN_NEW){openCreate()}
+</script>
+</body>
+</html>

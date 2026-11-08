@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#06080f">
+<title>Server Error | SHADOW HOSTING</title>
+{% include '_theme.html' %}
+<style>
+body{min-height:100vh;display:grid;place-items:center;padding:24px;isolation:isolate}
+body::before{content:"";position:fixed;inset:0;z-index:-2;background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:56px 56px;mask-image:radial-gradient(ellipse 55% 50% at 50% 45%,#000 10%,transparent 75%);-webkit-mask-image:radial-gradient(ellipse 55% 50% at 50% 45%,#000 10%,transparent 75%);opacity:.5}
+.glow{position:fixed;width:520px;height:520px;border-radius:50%;filter:blur(110px);z-index:-1;left:50%;top:40%;transform:translate(-50%,-50%);opacity:.35;background:var(--g,#5b8cff);animation:breathe 6s ease-in-out infinite}
+@keyframes breathe{50%{opacity:.5;transform:translate(-50%,-50%) scale(1.15)}}
+.card{width:100%;max-width:440px;padding:42px 34px 34px;border-radius:28px;text-align:center;background:linear-gradient(180deg,rgba(18,24,42,.92),rgba(9,12,22,.94));border:1px solid var(--line2);box-shadow:0 50px 100px -40px rgba(0,0,0,.9);animation:rise .7s var(--ease) both}
+@keyframes rise{from{opacity:0;transform:translateY(22px) scale(.98)}to{opacity:1;transform:none}}
+.ring{position:relative;width:96px;height:96px;margin:0 auto 24px;display:grid;place-items:center;border-radius:30px;font-size:38px;color:var(--c);background:color-mix(in srgb,var(--c) 14%,transparent);border:1px solid color-mix(in srgb,var(--c) 40%,transparent)}
+.ring::after{content:"";position:absolute;inset:-10px;border-radius:38px;border:1px solid color-mix(in srgb,var(--c) 30%,transparent);animation:ripple 2.4s ease-out infinite}
+@keyframes ripple{from{transform:scale(.9);opacity:1}to{transform:scale(1.25);opacity:0}}
+.ring i{animation:wob 3s ease-in-out infinite}
+@keyframes wob{50%{transform:rotate(-8deg) scale(1.06)}}
+h1{font-size:28px;font-weight:800;letter-spacing:-.03em;margin-bottom:10px}
+p.m{color:var(--tx2);margin:0 0 6px;font-size:15.5px}
+p.s{color:var(--tx3);margin:0;font-size:14px}
+.acts{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:28px}
+</style>
+</head>
+<body>
+{% if error_type == "expired" %}
+<div class="glow" style="--g:#f5a524"></div>
+<main class="card" style="--c:#fbbf24">
+  <div class="ring"><i class="fas fa-hourglass-end"></i></div>
+  <h1>Server Expired</h1>
+  <p class="m">Your server subscription has ended.</p>
+  <p class="s">Contact admin to renew.</p>
+{% elif error_type == "suspended" %}
+<div class="glow" style="--g:#f5a524"></div>
+<main class="card" style="--c:#fbbf24">
+  <div class="ring"><i class="fas fa-ban"></i></div>
+  <h1>Server Suspended</h1>
+  <p class="m">This server or account has been suspended.</p>
+  <p class="s">Contact admin for details.</p>
+{% elif error_type == "maintenance" %}
+<div class="glow" style="--g:#5b8cff"></div>
+<main class="card" style="--c:#8fb0ff">
+  <div class="ring"><i class="fas fa-screwdriver-wrench"></i></div>
+  <h1>Under Maintenance</h1>
+  <p class="m">We are making improvements right now.</p>
+  <p class="s">Please try again in a little while.</p>
+{% elif error_type == "deleted" %}
+<div class="glow" style="--g:#e5484d"></div>
+<main class="card" style="--c:#f87171">
+  <div class="ring"><i class="fas fa-trash-alt"></i></div>
+  <h1>Server Not Found</h1>
+  <p class="m">This server has been deleted.</p>
+  <p class="s">Contact admin for details.</p>
+{% else %}
+<div class="glow" style="--g:#5b6a8a"></div>
+<main class="card" style="--c:#98a2bd">
+  <div class="ring"><i class="fas fa-question"></i></div>
+  <h1>Error</h1>
+  <p class="m">Something went wrong.</p>
+{% endif %}
+  <div class="acts">
+    <a href="https://t.me/SHADOW_HEX_GOD" target="_blank" class="btn btn-primary"><i class="fab fa-telegram-plane"></i> Contact Admin</a>
+    <a href="/" class="btn btn-ghost"><i class="fas fa-house"></i> Home</a>
+  </div>
+</main>
+</body>
+</html>

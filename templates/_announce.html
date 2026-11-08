@@ -1,0 +1,10 @@
+{% if announcement %}
+<style>
+.ann{display:flex;align-items:flex-start;gap:12px;margin:12px auto 0;padding:12px 16px;border-radius:14px;font-size:13.5px;line-height:1.5;border:1px solid var(--line2);background:rgba(91,140,255,.1);color:var(--acc2);max-width:1180px;width:calc(100% - 28px)}
+.ann i{margin-top:3px}
+.ann.success{background:rgba(52,211,153,.1);border-color:rgba(52,211,153,.3);color:var(--ok)}
+.ann.warning{background:rgba(251,191,36,.1);border-color:rgba(251,191,36,.3);color:var(--warn)}
+.ann.danger{background:rgba(248,113,113,.1);border-color:rgba(248,113,113,.3);color:var(--bad)}
+</style>
+<div class="ann {{ announcement.type }}" role="status"><i class="fas fa-bullhorn"></i><span>{{ announcement.text }}</span></div>
+{% endif %}
